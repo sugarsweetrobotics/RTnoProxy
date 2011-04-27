@@ -1,0 +1,41 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTnoProxyComp", "RTnoProxy\RTnoProxyComp_vc9.vcproj", "{0B172473-53D3-41FA-A592-A841A4DA9E1D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTnoProxy", "RTnoProxy\RTnoProxy_vc9.vcproj", "{82AFC2A4-A128-46D1-A276-006515B5BDDC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataPortTest", "DataPortTest\DataPortTest_vc9.vcproj", "{5000CAA5-0AE1-4BBA-9F32-56A82E658063}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataPortTestComp", "DataPortTest\DataPortTestComp_vc9.vcproj", "{CE4CF198-0DB1-4FC2-96BD-8EE52F3C416B}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "RTnoProxySetup", "RTnoProxySetup\RTnoProxySetup.vdproj", "{F4861F90-0C03-42EC-9489-78823D37162C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B172473-53D3-41FA-A592-A841A4DA9E1D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0B172473-53D3-41FA-A592-A841A4DA9E1D}.Debug|Win32.Build.0 = Debug|Win32
+		{0B172473-53D3-41FA-A592-A841A4DA9E1D}.Release|Win32.ActiveCfg = Release|Win32
+		{0B172473-53D3-41FA-A592-A841A4DA9E1D}.Release|Win32.Build.0 = Release|Win32
+		{82AFC2A4-A128-46D1-A276-006515B5BDDC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{82AFC2A4-A128-46D1-A276-006515B5BDDC}.Debug|Win32.Build.0 = Debug|Win32
+		{82AFC2A4-A128-46D1-A276-006515B5BDDC}.Release|Win32.ActiveCfg = Release|Win32
+		{82AFC2A4-A128-46D1-A276-006515B5BDDC}.Release|Win32.Build.0 = Release|Win32
+		{5000CAA5-0AE1-4BBA-9F32-56A82E658063}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5000CAA5-0AE1-4BBA-9F32-56A82E658063}.Debug|Win32.Build.0 = Debug|Win32
+		{5000CAA5-0AE1-4BBA-9F32-56A82E658063}.Release|Win32.ActiveCfg = Release|Win32
+		{5000CAA5-0AE1-4BBA-9F32-56A82E658063}.Release|Win32.Build.0 = Release|Win32
+		{CE4CF198-0DB1-4FC2-96BD-8EE52F3C416B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CE4CF198-0DB1-4FC2-96BD-8EE52F3C416B}.Debug|Win32.Build.0 = Debug|Win32
+		{CE4CF198-0DB1-4FC2-96BD-8EE52F3C416B}.Release|Win32.ActiveCfg = Release|Win32
+		{CE4CF198-0DB1-4FC2-96BD-8EE52F3C416B}.Release|Win32.Build.0 = Release|Win32
+		{F4861F90-0C03-42EC-9489-78823D37162C}.Debug|Win32.ActiveCfg = Debug
+		{F4861F90-0C03-42EC-9489-78823D37162C}.Release|Win32.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
