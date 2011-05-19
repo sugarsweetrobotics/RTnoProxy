@@ -138,9 +138,12 @@ RTC::ReturnCode_t DataPortTest::onExecute(RTC::UniqueId ec_id)
 	std::cout << "Input Character and press Enter key >> " << std::endl;
 
 
-	int c;
+	char c;
 	char buffer[256];
+	std::cin.clear();
 	std::cin >> c;
+	std::cin.clear();
+	std::cin.ignore( 1024, '\n' ); 
 	switch(c) {
 		case 'l':
 			std::cout << "Input Number (long): ";
