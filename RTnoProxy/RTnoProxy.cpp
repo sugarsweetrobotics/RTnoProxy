@@ -80,6 +80,15 @@ int RTnoProxy::addInPortWrapper(char TypeCode, const char* PortName)
   std::cout << "AddInPort(" << TypeCode << ", " << PortName << ")" << std::endl;
   InPortWrapperBase* inport;
   switch(TypeCode) {
+  case TYPECODE_TIMED_CHAR:
+	  inport = new InPortWrapper<TimedChar, char>(PortName);
+	  break;
+  case TYPECODE_TIMED_OCTET:
+	  inport = new InPortWrapper<TimedOctet, char>(PortName);
+	  break;
+  case TYPECODE_TIMED_BOOLEAN:
+	  inport = new InPortWrapper<TimedBoolean, bool>(PortName);
+	  break;
   case TYPECODE_TIMED_LONG:
       inport = new InPortWrapper<TimedLong, long>(PortName);
     break;
@@ -89,6 +98,15 @@ int RTnoProxy::addInPortWrapper(char TypeCode, const char* PortName)
   case TYPECODE_TIMED_DOUBLE:
       inport = new InPortWrapper<TimedDouble, double>(PortName);
     break;
+  case TYPECODE_TIMED_CHAR_SEQ:
+	  inport = new SeqInPortWrapper<TimedCharSeq, char>(PortName);
+	  break;
+  case TYPECODE_TIMED_OCTET_SEQ:
+	  inport = new SeqInPortWrapper<TimedOctetSeq, char>(PortName);
+	  break;
+  case TYPECODE_TIMED_BOOLEAN_SEQ:
+	  inport = new SeqInPortWrapper<TimedBooleanSeq, bool>(PortName);  
+	  break;
   case TYPECODE_TIMED_LONG_SEQ:
       inport = new SeqInPortWrapper<TimedLongSeq, long>(PortName);
     break;
@@ -115,6 +133,15 @@ int RTnoProxy::addOutPortWrapper(char TypeCode, const char* PortName)
   std::cout << "AddOutPort(" << TypeCode << ", " << PortName << ")" << std::endl;
   OutPortWrapperBase * outport;
   switch(TypeCode) {
+  case TYPECODE_TIMED_CHAR:
+      outport = new OutPortWrapper<TimedChar, char>(PortName);
+    break;
+  case TYPECODE_TIMED_OCTET:
+      outport = new OutPortWrapper<TimedOctet, char>(PortName);
+    break;
+  case TYPECODE_TIMED_BOOLEAN:
+      outport = new OutPortWrapper<TimedBoolean, bool>(PortName);
+    break;
   case TYPECODE_TIMED_LONG:
       outport = new OutPortWrapper<TimedLong, long>(PortName);
     break;
@@ -123,6 +150,15 @@ int RTnoProxy::addOutPortWrapper(char TypeCode, const char* PortName)
     break;
   case TYPECODE_TIMED_DOUBLE:
       outport = new OutPortWrapper<TimedDouble, double>(PortName);
+    break;
+  case TYPECODE_TIMED_CHAR_SEQ:
+      outport = new SeqOutPortWrapper<TimedCharSeq, char>(PortName);
+    break;
+  case TYPECODE_TIMED_OCTET_SEQ:
+      outport = new SeqOutPortWrapper<TimedOctetSeq, char>(PortName);
+    break;
+  case TYPECODE_TIMED_BOOLEAN_SEQ:
+      outport = new SeqOutPortWrapper<TimedBooleanSeq, bool>(PortName);
     break;
   case TYPECODE_TIMED_LONG_SEQ:
       outport = new SeqOutPortWrapper<TimedLongSeq, long>(PortName);

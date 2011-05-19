@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_0693C5610F0247D6BF99E929DAF29264"
-        "OwnerKey" = "8:_3198541FC678442FB1FEACC4B482EFDE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0BA1844EE57F96CF4C4D8C6B9CBD2DC5"
         "OwnerKey" = "8:_1045888C1A6B472F9E24685E9F6E43FD"
         "MsmSig" = "8:_UNDEFINED"
@@ -105,38 +99,44 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_3198541FC678442FB1FEACC4B482EFDE"
-        "OwnerKey" = "8:_1045888C1A6B472F9E24685E9F6E43FD"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3198541FC678442FB1FEACC4B482EFDE"
-        "OwnerKey" = "8:_A519D78553134A1BA5FBBE99D5DD17B3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3198541FC678442FB1FEACC4B482EFDE"
-        "OwnerKey" = "8:_A09FBB72F8F14B1BAD32C8019E3F8B3D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3198541FC678442FB1FEACC4B482EFDE"
-        "OwnerKey" = "8:_19E62E36C8C84E61B0AC19678F9BC4CF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_63070F24C93349D4B3D70EB98AEC8A18"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_9911ECA128F54C91B6F357E38E902101"
+        "OwnerKey" = "8:_1045888C1A6B472F9E24685E9F6E43FD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9911ECA128F54C91B6F357E38E902101"
+        "OwnerKey" = "8:_A519D78553134A1BA5FBBE99D5DD17B3"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9911ECA128F54C91B6F357E38E902101"
+        "OwnerKey" = "8:_A09FBB72F8F14B1BAD32C8019E3F8B3D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9911ECA128F54C91B6F357E38E902101"
+        "OwnerKey" = "8:_19E62E36C8C84E61B0AC19678F9BC4CF"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A09FBB72F8F14B1BAD32C8019E3F8B3D"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A3186F51E1E9425A8EA01384444C071C"
+        "OwnerKey" = "8:_9911ECA128F54C91B6F357E38E902101"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -217,6 +217,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -233,6 +241,27 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5"
+                    {
+                    "Name" = "8:.NET Framework 3.5"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -473,7 +502,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:RTnoProxy"
         "ProductCode" = "8:{BD1E37C0-F8BF-4AF0-B10D-925CFAF7E136}"
-        "PackageCode" = "8:{07766838-19FB-40E2-BBEF-FC4432A897DF}"
+        "PackageCode" = "8:{FB98F945-410C-4069-9A13-21F547F9C514}"
         "UpgradeCode" = "8:{F24701E8-5EC1-4172-8DF2-973258CC618D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
@@ -608,7 +637,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8CD507F4EA0D4FC5B60B9CF4D6F985C9"
             {
-            "Name" = "8:DataPortTestComp"
+            "Name" = "8:DataPortTestComp.exe"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -622,7 +651,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8EF40E781B69475284B3976144D956FB"
             {
-            "Name" = "8:RTnoProxyComp"
+            "Name" = "8:RTnoProxyComp.exe"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -1044,11 +1073,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_0693C5610F0247D6BF99E929DAF29264"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_9911ECA128F54C91B6F357E38E902101"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc90_crt_x86.msm"
+            "SourcePath" = "8:policy_9_0_Microsoft_VC90_CRT_x86.msm"
                 "Properties"
                 {
                 }
@@ -1058,11 +1087,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_3198541FC678442FB1FEACC4B482EFDE"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_A3186F51E1E9425A8EA01384444C071C"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_9_0_Microsoft_VC90_CRT_x86.msm"
+            "SourcePath" = "8:microsoft_vc90_crt_x86.msm"
                 "Properties"
                 {
                 }
