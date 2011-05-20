@@ -202,7 +202,7 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 
   std::cout << "Opening SerialPort(" << m_comport << ")....." << std::ends;
   try {
-    m_pSerialPort = new SerialPort(m_comport.c_str(), 19200);
+    m_pSerialPort = new SerialPort(m_comport.c_str(), m_baudrate);
   } catch (ComOpenException& e) {
     std::cout << "Fail" << std::endl;
     return RTC::RTC_ERROR;
