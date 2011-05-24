@@ -344,6 +344,10 @@ RTC::ReturnCode_t RTnoProxy::onExecute(RTC::UniqueId ec_id)
   SendPacket(m_pSerialPort, EXECUTE, 0, NULL);
   while(1) {
     int retval = ReceivePacket(m_pSerialPort, packet_buffer);
+	if(retval < 0) {
+		// Timeout
+		return RTC::RTC_OK;
+	}
 	switch(packet_buffer[PACKET_INTERFACE]) {
     case EXECUTE:
       if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
