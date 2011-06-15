@@ -63,7 +63,7 @@ RTnoProxy::~RTnoProxy()
 {
 }
 
-static std::string GetStringFromPacket(const char* start_adr, int length)
+static std::string GetStringFromPacket(const unsigned char* start_adr, int length)
 {
   char* cbuf = new char[length+1];
   memcpy(cbuf, start_adr, length);
@@ -220,11 +220,11 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
   std::cout << "Go!" << std::endl;
 
   std::cout << "Starting up onInitialize sequence." << std::endl;
-  char packet_buffer[MAX_PACKET_SIZE];
+  unsigned char packet_buffer[MAX_PACKET_SIZE];
 
   SendPacket(m_pSerialPort, INITIALIZE, 0, NULL);
 
-  char ret;
+  unsigned char ret;
 
   while(1) {
     std::string strbuf;
@@ -290,7 +290,7 @@ RTC::ReturnCode_t RTnoProxy::onActivated(RTC::UniqueId ec_id)
 {
   std::cout << "Starting onActivated sequence."<< std::ends;
   SendPacket(m_pSerialPort, ACTIVATE, 0, NULL);
-  char packet_buffer[MAX_PACKET_SIZE];
+  unsigned char packet_buffer[MAX_PACKET_SIZE];
   while(1) {
     ReceivePacket(m_pSerialPort, packet_buffer);
     if(packet_buffer[PACKET_INTERFACE] == ACTIVATE) {
@@ -313,7 +313,7 @@ RTC::ReturnCode_t RTnoProxy::onDeactivated(RTC::UniqueId ec_id)
 {
   std::cout << "Starting onDeactivated sequence."<< std::endl;
   SendPacket(m_pSerialPort, DEACTIVATE, 0, NULL);
-  char packet_buffer[MAX_PACKET_SIZE];
+  unsigned char packet_buffer[MAX_PACKET_SIZE];
   while(1) {
     ReceivePacket(m_pSerialPort, packet_buffer);
     if(packet_buffer[PACKET_INTERFACE] == DEACTIVATE) {
@@ -335,8 +335,8 @@ RTC::ReturnCode_t RTnoProxy::onDeactivated(RTC::UniqueId ec_id)
 RTC::ReturnCode_t RTnoProxy::onExecute(RTC::UniqueId ec_id)
 {
   //  std::cout << "Starting onExecute sequence."<< std::endl;
-  char packet_buffer[MAX_PACKET_SIZE];
-  char ret;
+  unsigned char packet_buffer[MAX_PACKET_SIZE];
+  unsigned char ret;
   std::string strbuf;
   InPortWrapperBase* inport;
   OutPortWrapperBase* outport;

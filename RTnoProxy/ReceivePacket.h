@@ -4,6 +4,6 @@
 #include "SerialPort.h"
 #include "Packet.h"
 
-int ReceivePacket(org::ysuga::SerialPort* pSerialPort, char* packet);
+int ReceivePacket(org::ysuga::SerialPort* pSerialPort, unsigned char* packet);
 
 #endif

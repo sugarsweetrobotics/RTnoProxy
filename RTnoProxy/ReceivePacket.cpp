@@ -4,7 +4,7 @@
 
 using namespace org::ysuga;
 
-int ReceivePacket(SerialPort* pSerial, char* packet) {
+int ReceivePacket(SerialPort* pSerial, unsigned char* packet) {
   int counter = 0;
   unsigned char sum = 0;
   while(pSerial->GetSizeInRxBuffer() < PACKET_HEADER_SIZE) {

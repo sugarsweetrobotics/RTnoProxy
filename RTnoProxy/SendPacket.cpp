@@ -3,7 +3,7 @@
 #include "SendPacket.h"
 
 
-int SendPacket(org::ysuga::SerialPort* pSerialPort, const char arg_interface, const char data_length, const char* packet_data) {
+int SendPacket(org::ysuga::SerialPort* pSerialPort, const char arg_interface, const char data_length, const unsigned char* packet_data) {
   char sum = 0;
   //  std::cout << "SendPacket(" << interface << "L=" << (int)data_length << ")" << std::endl;
   pSerialPort->Write(&arg_interface, 1);
