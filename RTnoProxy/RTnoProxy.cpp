@@ -13,8 +13,6 @@
 #include <coil/Time.h>
 
 #include "Packet.h"
-#include "ReceivePacket.h"
-#include "SendPacket.h"
 
 enum {
   CREATED='C',

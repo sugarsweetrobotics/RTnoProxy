@@ -181,19 +181,11 @@
 			UniqueIdentifier="{FF74F337-3160-48C6-943A-FF3AF6C788D4}"
 			>
 			<File
-				RelativePath=".\ReceivePacket.cpp"
-				>
-			</File>
-			<File
 				RelativePath="RTnoProxy.cpp"
 				>
 			</File>
 			<File
 				RelativePath="RTnoProxyComp.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SendPacket.cpp"
 				>
 			</File>
 			<File
@@ -223,15 +215,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ReceivePacket.h"
-				>
-			</File>
-			<File
 				RelativePath="RTnoProxy.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SendPacket.h"
 				>
 			</File>
 			<Filter
