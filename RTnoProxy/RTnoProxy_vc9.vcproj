@@ -193,6 +193,10 @@
 				RelativePath=".\SerialPort\src\SerialPort.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Transport.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -221,6 +225,18 @@
 			</File>
 			<File
 				RelativePath=".\SendPacket.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SerialDevice.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Transport.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UARTTransport.h"
 				>
 			</File>
 			<Filter

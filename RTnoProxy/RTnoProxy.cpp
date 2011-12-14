@@ -16,6 +16,16 @@
 #include "ReceivePacket.h"
 #include "SendPacket.h"
 
+enum {
+  CREATED='C',
+  INACTIVE='I',
+  ACTIVE='A',
+  RTC_ERROR='E',
+  NONE='N',
+};
+
+
+
 // Module specification
 // <rtc-template block="module_spec">
 
@@ -179,6 +189,110 @@ int RTnoProxy::addOutPortWrapper(char TypeCode, const char* PortName)
   return 0;
 }
 
+RTC::ReturnCode_t RTnoProxy::getRTnoProfile()
+{
+  std::cout << "-RTnoProxy::getRTnoProfile() called." << std::endl;
+  unsigned char packet_buffer[MAX_PACKET_SIZE];
+
+  m_pTransport->SendPacket(GET_PROFILE, 0, NULL);
+  while(1) {
+    int retval = m_pTransport->ReceivePacket(packet_buffer);
+	if(retval == 0) continue;
+	else if(retval < 0) {
+      std::cout << "--RTnoProxy::getRTnoProfile() Failed." << std::endl;
+	  if(retval == -CHECKSUM_ERROR) {
+		std::cout << "---Check Sum Error." << std::endl;
+		return RTC::RTC_ERROR;
+	  } else if(retval == -TIMEOUT) {
+		std::cout << "---Timeout Error." << std::endl;
+		return RTC::RTC_ERROR;
+	  } else {
+		std::cout << "---Unknown Error ("<<retval<<")" << std::endl;
+		return RTC::RTC_ERROR;
+	  }
+	}
+
+
+    std::cout << "--Packet Received." << std::endl;
+
+    std::string strbuf;
+    switch(packet_buffer[PACKET_INTERFACE]) {
+    case GET_PROFILE: // Return Code.
+		if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
+			std::cout << "--RTnoProxy::getRTnoProfile() Succeeded." << std::endl;
+			return RTC::RTC_OK;
+		} else {
+			std::cout << "--RTnoProxy::getRTnoProfile() Failed." << std::endl;
+			return RTC::RTC_ERROR;
+		}
+		break;
+    case ADD_INPORT: 
+      strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
+      addInPortWrapper(packet_buffer[DATA_START_ADDR], strbuf.c_str());
+      break;
+    case ADD_OUTPORT:
+      strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
+      addOutPortWrapper(packet_buffer[DATA_START_ADDR], strbuf.c_str());
+      break;
+    default:
+      std::cout << "Unknown Command (" << packet_buffer[PACKET_INTERFACE] << ")" << std::endl;
+      return RTC::RTC_ERROR;
+    }
+  }
+}
+
+RTC::ReturnCode_t RTnoProxy::getStatus()
+{
+	unsigned char packet_buffer[MAX_PACKET_SIZE];
+	m_pTransport->SendPacket(GET_STATUS, 0, NULL);
+	m_pTransport->ReceivePacket(packet_buffer);
+  if(packet_buffer[PACKET_INTERFACE] != GET_STATUS) {
+	  return RTC::RTC_ERROR;
+  }
+  switch(packet_buffer[DATA_START_ADDR]) {
+	  case INACTIVE:
+		  std::cout << "RTno is inactive. OK." << std::endl;
+		  return RTC::RTC_OK;
+	  case ACTIVE:
+		  std::cout << "RTno is active." << std::endl;
+		  std::cout << "deactivating the RTno....." << std::ends;
+		  m_pTransport->SendPacket(DEACTIVATE, 0, NULL);
+		  m_pTransport->ReceivePacket(packet_buffer);
+		  if(packet_buffer[DATA_START_ADDR] == RTC_OK) {
+			  std::cout << "OK." << std::endl;
+			  return RTC::RTC_OK;
+		  } else {
+			  return RTC::RTC_ERROR;
+		  }
+	  default:
+		  std::cout << "RTno is unknown state." << std::endl;
+		  return RTC::RTC_ERROR;
+  }
+
+  return RTC::RTC_OK;
+}
+
+RTC::ReturnCode_t RTnoProxy::getContext()
+{
+	unsigned char packet_buffer[MAX_PACKET_SIZE];
+  m_pTransport->SendPacket(GET_CONTEXT, 0, NULL);
+  m_pTransport->ReceivePacket(packet_buffer);
+  if(packet_buffer[PACKET_INTERFACE] != GET_CONTEXT) {
+	  return RTC::RTC_ERROR;
+  }
+  switch(packet_buffer[DATA_START_ADDR]) {
+	  case ProxySynchronousExecutionContext:
+		  m_ProxySynchronousExecution = TRUE;
+		  break;
+
+	  default:
+		  m_ProxySynchronousExecution = FALSE;
+  }
+
+  return RTC::RTC_OK;
+}
+
+
 RTC::ReturnCode_t RTnoProxy::onInitialize()
 {
   bindParameter("comport", m_comport, "/dev/tty0");
@@ -202,7 +316,8 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 
   std::cout << "Opening SerialPort(" << m_comport << ")....." << std::ends;
   try {
-    m_pSerialPort = new SerialPort(m_comport.c_str(), m_baudrate);
+    //  m_pSerialPort = new SerialPort(m_comport.c_str(), m_baudrate);
+	  m_pTransport = new UARTTransport(m_comport.c_str(), m_baudrate);
   } catch (ComOpenException& e) {
     std::cout << "Fail" << std::endl;
     return RTC::RTC_ERROR;
@@ -220,53 +335,20 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
   std::cout << "Go!" << std::endl;
 
   std::cout << "Starting up onInitialize sequence." << std::endl;
-  unsigned char packet_buffer[MAX_PACKET_SIZE];
+  getRTnoProfile(); 
 
-  SendPacket(m_pSerialPort, INITIALIZE, 0, NULL);
+  getStatus();
 
-  unsigned char ret;
+  getContext();
 
-  while(1) {
-    std::string strbuf;
-    ReceivePacket(m_pSerialPort, packet_buffer);
-    std::cout << "--Packet Received." << std::endl;
-    switch(packet_buffer[PACKET_INTERFACE]) {
-    case INITIALIZE:
-      if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
-	std::cout << "--RTnoProxy::onInitialize Succeeded." << std::endl;
-	return RTC::RTC_OK;
-      } else {
-	std::cout << "--RTnoProxy::onInitialize Failed." << std::endl;
-	return RTC::RTC_ERROR;
-      }
+  throw new std::exception();
 
-      break;
-    case ADD_INPORT: 
-      strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
-      addInPortWrapper(packet_buffer[DATA_START_ADDR], strbuf.c_str());
-      ret = RTNO_OK;
-      SendPacket(m_pSerialPort, ADD_INPORT, 1, &ret);
-      break;
-    case ADD_OUTPORT:
-      strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
-      addOutPortWrapper(packet_buffer[DATA_START_ADDR], strbuf.c_str());
-      ret = RTNO_OK;
-      SendPacket(m_pSerialPort, ADD_OUTPORT, 1, &ret);
-      break;
-    default:
-      std::cout << "Unknown Command (" << packet_buffer[PACKET_INTERFACE] << ")" << std::endl;
-      return RTC::RTC_ERROR;
-    }
-    //    usleep(100*1000);
-  }
-  return RTC::RTC_ERROR;
-  //  Returnompxco RTC::RTC_OK;
+  return RTC::RTC_OK;
 }
 
 RTC::ReturnCode_t RTnoProxy::onFinalize()
 {
-	delete m_pSerialPort;
-	m_pSerialPort = NULL;
+	delete m_pTransport;
   return RTC::RTC_OK;
 }
 
@@ -289,12 +371,14 @@ RTC::ReturnCode_t RTnoProxy::onShutdown(RTC::UniqueId ec_id)
 RTC::ReturnCode_t RTnoProxy::onActivated(RTC::UniqueId ec_id)
 {
   std::cout << "Starting onActivated sequence."<< std::ends;
-  SendPacket(m_pSerialPort, ACTIVATE, 0, NULL);
+  m_pTransport->SendPacket(ACTIVATE, 0, NULL);
   unsigned char packet_buffer[MAX_PACKET_SIZE];
   while(1) {
-    ReceivePacket(m_pSerialPort, packet_buffer);
+    
+    int ret = m_pTransport->ReceivePacket(packet_buffer);
+	if(ret == 0) continue;
     if(packet_buffer[PACKET_INTERFACE] == ACTIVATE) {
-      if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
+		if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
 	std::cout << "Success" << std::endl;
 	return RTC::RTC_OK;
       }else {
@@ -302,7 +386,7 @@ RTC::ReturnCode_t RTnoProxy::onActivated(RTC::UniqueId ec_id)
       }
     }else {
       std::cout << "Unknown Interface: " << packet_buffer[PACKET_INTERFACE] << std::endl;
-      return RTC::RTC_ERROR;
+     // return RTC::RTC_ERROR;
     }
   }
   return RTC::RTC_OK;
@@ -312,10 +396,10 @@ RTC::ReturnCode_t RTnoProxy::onActivated(RTC::UniqueId ec_id)
 RTC::ReturnCode_t RTnoProxy::onDeactivated(RTC::UniqueId ec_id)
 {
   std::cout << "Starting onDeactivated sequence."<< std::endl;
-  SendPacket(m_pSerialPort, DEACTIVATE, 0, NULL);
+  m_pTransport->SendPacket(DEACTIVATE, 0, NULL);
   unsigned char packet_buffer[MAX_PACKET_SIZE];
   while(1) {
-    ReceivePacket(m_pSerialPort, packet_buffer);
+    m_pTransport->ReceivePacket(packet_buffer);
     if(packet_buffer[PACKET_INTERFACE] == DEACTIVATE) {
       if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
 	std::cout << "Success" << std::endl;
@@ -336,27 +420,97 @@ RTC::ReturnCode_t RTnoProxy::onExecute(RTC::UniqueId ec_id)
 {
   //  std::cout << "Starting onExecute sequence."<< std::endl;
   unsigned char packet_buffer[MAX_PACKET_SIZE];
+  char nameBuffer[32];
   unsigned char ret;
   std::string strbuf;
   InPortWrapperBase* inport;
   OutPortWrapperBase* outport;
   int len, namelen, datalen;
-  SendPacket(m_pSerialPort, EXECUTE, 0, NULL);
+
+
+  std::map<std::string, InPortWrapperBase*>::iterator it = inPortMap.begin();
+  while(it != inPortMap.end()) {
+	  std::string name = (*it).first;
+	  InPortWrapperBase* inPort = (*it).second;
+	  if(inPort->isNew()) {
+		  int len = inPort->Read();
+		  int namelen = strlen(name.c_str());
+		  packet_buffer[0] = namelen;
+		  packet_buffer[1] = inPort->getTypeSizeInArduino() * len;
+		  memcpy(packet_buffer+2, name.c_str(), namelen);
+		  inPort->Get(packet_buffer+2+namelen, len);
+		  m_pTransport->SendPacket(SEND_DATA, len*inPort->getTypeSizeInArduino() + namelen + 2, packet_buffer);
+	  }
+	  ++it;
+  }
+
+
+  m_pTransport->SendPacket(EXECUTE, 0, NULL);
+
+  while(1) {  
+	  int ret = m_pTransport->ReceivePacket(packet_buffer);
+	  if(ret == 0) continue;
+	  if(ret > 0) {
+		  switch(packet_buffer[PACKET_INTERFACE]) {
+			  case RECEIVE_DATA: 
+				{
+				  namelen = packet_buffer[DATA_START_ADDR];
+				  datalen = packet_buffer[DATA_START_ADDR+1];
+				  memcpy(nameBuffer, &(packet_buffer[DATA_START_ADDR+2]), namelen);
+				  nameBuffer[namelen] = 0;
+				  OutPortWrapperBase* outPort = outPortMap[nameBuffer];
+				  if(outPort == NULL) {
+					  std::cout << "Unknown Port Name [" << nameBuffer << "]" << std::endl;
+				  } else {
+					  outPort->Write(packet_buffer + DATA_START_ADDR + 2 + namelen, datalen / outPort->getTypeSizeInArduino());
+				  }
+				}
+				  break;
+			  case EXECUTE:
+				  if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
+				return RTC::RTC_OK;
+				  }else {
+				return RTC::RTC_ERROR;
+				  }
+
+				  break;
+			  default:
+				  std::cout << "Unknown Packet [" << packet_buffer[PACKET_INTERFACE] << "]" << std::endl;
+				  break;
+		  }
+
+	  }
+	  if(ret < 0) {
+
+	  }
+  }
+
+/**
+ // int ret;
+  while((ret = ReceivePacket(m_pSerialPort, packet_buffer)) == 0) {
+	  ; // do nothing;
+  }
+  if(ret < 0) {
+	  return RTC::RTC_ERROR;
+  }
+  if(packet_buffer[PACKET_INTERFACE] == EXECUTE) {
+      if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
+	return RTC::RTC_OK;
+      }else {
+	return RTC::RTC_ERROR;
+      }
+  } else {
+	  return RTC::RTC_ERROR;
+  }
+
+  /*	  
   while(1) {
     int retval = ReceivePacket(m_pSerialPort, packet_buffer);
 	if(retval < 0) {
 		// Timeout
 		return RTC::RTC_OK;
 	}
-	switch(packet_buffer[PACKET_INTERFACE]) {
-    case EXECUTE:
-      if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
-	//	std::cout << "Success" << std::endl;
-	return RTC::RTC_OK;
-      }else {
-	return RTC::RTC_ERROR;
-      }
-      break;
+	
       // go to return RTC::RTC_OK;
     case INPORT_ISNEW:
 
@@ -400,6 +554,7 @@ RTC::ReturnCode_t RTnoProxy::onExecute(RTC::UniqueId ec_id)
       return RTC::RTC_ERROR;
     }
   }
+   */
   return RTC::RTC_OK;
 }
 

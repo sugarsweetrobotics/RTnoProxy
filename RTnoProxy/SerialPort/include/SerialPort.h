@@ -14,6 +14,8 @@
 #include "ComOpenException.h"
 #include "ComStateException.h"
 
+#include "SerialDevice.h"
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -26,7 +28,7 @@ namespace org {
 		 *
 		 * @brief Portable Serial Port Class
 		 ***************************************************/
-		class SerialPort
+		class SerialPort : public SerialDevice
 		{
 		private:
 #ifdef WIN32

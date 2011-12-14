@@ -200,6 +200,10 @@
 				RelativePath=".\SerialPort\src\SerialPort.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Transport.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

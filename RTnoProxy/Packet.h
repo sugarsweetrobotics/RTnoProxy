@@ -25,6 +25,11 @@
 #define ONERROR 'C'
 #define RESET 'R'
 #define GET_STATUS 'X'
+#define SEND_DATA 'S'
+#define RECEIVE_DATA 'V'
+#define GET_PROFILE 'Z'
+#define GET_CONTEXT 'B'
+
 
 #define ADD_INPORT 'P'
 #define ADD_OUTPORT 'Q'
@@ -61,4 +66,17 @@
 #define TYPECODE_TIMED_DOUBLE_SEQ 'D'
 
 #define MAX_PACKET_SIZE 64
+
+/***********************************************
+ *
+ **********************************************/
+#define ConnectionTypeSerial1 0x01
+#define ConnectionTypeSerial2 0x02
+#define ConnectionTypeSerial3 0x03
+
+#define ProxySynchronousExecutionContext 0x21
+#define Timer1ExecutionContext 0x22
+#define Timer2ExecutionContext 0x23
+
+
 #endif
