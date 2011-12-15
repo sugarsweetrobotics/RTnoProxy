@@ -181,11 +181,19 @@
 			UniqueIdentifier="{FF74F337-3160-48C6-943A-FF3AF6C788D4}"
 			>
 			<File
+				RelativePath=".\RTnoProtocol.cpp"
+				>
+			</File>
+			<File
 				RelativePath="RTnoProxy.cpp"
 				>
 			</File>
 			<File
 				RelativePath="RTnoProxyComp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RTnoRTObjectWrapper.cpp"
 				>
 			</File>
 			<File
@@ -216,6 +224,18 @@
 			</File>
 			<File
 				RelativePath="RTnoProxy.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SerialDevice.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Transport.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UARTTransport.h"
 				>
 			</File>
 			<Filter

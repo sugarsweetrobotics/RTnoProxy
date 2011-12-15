@@ -178,7 +178,15 @@
 			UniqueIdentifier="{F04EEF1B-DC38-4C6B-8214-A6E9D928225F}"
 			>
 			<File
+				RelativePath=".\RTnoProtocol.cpp"
+				>
+			</File>
+			<File
 				RelativePath="RTnoProxy.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RTnoRTObjectWrapper.cpp"
 				>
 			</File>
 			<File
@@ -208,7 +216,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RTnoProfile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RTnoProtocol.h"
+				>
+			</File>
+			<File
 				RelativePath="RTnoProxy.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RTnoRTObjectWrapper.h"
 				>
 			</File>
 			<File

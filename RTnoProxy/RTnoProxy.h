@@ -31,11 +31,8 @@
 
 
 //#include "SerialPort.h"
-#include "InPortWrapper.h"
-#include "OutPortWrapper.h"
-
-#include <map>
-
+#include "RTnoRTObjectWrapper.h"
+#include "RTnoProtocol.h"
 #include "UARTTransport.h"
 
 using namespace RTC;
@@ -270,21 +267,15 @@ class RTnoProxy
 
   std::string m_comport;
   int m_baudrate;
-  //org::ysuga::SerialPort *m_pSerialPort;
 
   org::ysuga::Transport* m_pTransport;
+  org::ysuga::RTnoProtocol* m_pProtocol;
 
-  int addInPortWrapper(char TypeCode, const char* PortName);
-  int addOutPortWrapper(char TypeCode, const char* PortName);
+  org::ysuga::RTnoProfile* m_pProfile;
 
-  std::map<std::string, InPortWrapperBase*> inPortMap;
-  std::map<std::string, OutPortWrapperBase*> outPortMap;
+  org::ysuga::RTnoRTObjectWrapper *m_pRTObjectWrapper;
 
   bool m_ProxySynchronousExecution;
-
-  RTC::ReturnCode_t getRTnoProfile();
-  RTC::ReturnCode_t getContext();
-  RTC::ReturnCode_t getStatus();
 };
 
 

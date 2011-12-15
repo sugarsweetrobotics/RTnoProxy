@@ -21,6 +21,9 @@ namespace org {
 
 			int ReceivePacket(unsigned char* packet);
 
+			int IsReceived();
+		private:
+			int _Wait(unsigned char buffer_size);
 		};
 	};
 };
