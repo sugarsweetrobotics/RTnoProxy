@@ -8,6 +8,7 @@ using namespace org::ysuga;
 
 RTnoProtocol::RTnoProtocol(RTnoRTObjectWrapper* pRTObject, Transport *pTransport)
 {
+	m_SendBusy = FALSE;
 	m_pRTObjectWrapper = pRTObject;
 	m_pTransport = pTransport;
 }
@@ -71,29 +72,13 @@ int RTnoProtocol::GetRTnoProfile(RTnoProfile *profile)
 
 
 unsigned char RTnoProtocol::GetRTnoStatus()
-{
-	std::cout << "-RTnoProtocol::GetRTnoStatus() called." << std::endl;
+{	
 	unsigned char packet_buffer[MAX_PACKET_SIZE];
+	std::cout << "-RTnoProtocol::GetRTnoStatus() called." << std::endl;
+//	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
 	m_pTransport->SendPacket(GET_STATUS, 0, NULL);
-	while(1) {
-		int ret = m_pTransport->ReceivePacket(packet_buffer);
-		
-		if(ret == 0) continue; // no data in buffer.
-		if(ret == -TIMEOUT) {
-			std::cout << "---Timeout Error." << std::endl;
-			return -1; // Timeout or Checksum error.
-		} else if(ret == -CHECKSUM_ERROR) {
-			std::cout << "---Checksum Error." << std::endl;
-			return -1;
-		}
-
-		if(packet_buffer[PACKET_INTERFACE] != GET_STATUS) {
-			return -2;
-		}
-
-		return packet_buffer[DATA_START_ADDR];
-	}
+	return ReceiveReturnCode(GET_STATUS);
 }
 
 unsigned char RTnoProtocol::GetRTnoExecutionContextType()
@@ -102,6 +87,12 @@ unsigned char RTnoProtocol::GetRTnoExecutionContextType()
 	unsigned char packet_buffer[MAX_PACKET_SIZE];
 	
 	m_pTransport->SendPacket(GET_CONTEXT, 0, NULL);
+	return ReceiveReturnCode(GET_CONTEXT);
+}
+
+int RTnoProtocol::ReceiveReturnCode(unsigned char intf) {
+	unsigned char packet_buffer[MAX_PACKET_SIZE];
+
 	while(1) {
 		int ret = m_pTransport->ReceivePacket(packet_buffer);
 		if(ret == 0) continue;
@@ -113,7 +104,18 @@ unsigned char RTnoProtocol::GetRTnoExecutionContextType()
 			return -1;
 		}
 
-		if(packet_buffer[PACKET_INTERFACE] != GET_CONTEXT) {
+		if(packet_buffer[PACKET_INTERFACE] == SEND_DATA) {
+			m_SendBusy = FALSE;
+			continue;
+		}
+
+		if(packet_buffer[PACKET_INTERFACE] == RECEIVE_DATA) {
+			ReceiveData(packet_buffer);
+			continue;
+		}
+
+		if(packet_buffer[PACKET_INTERFACE] != intf) {
+			std::cout << "---Unknown Packet Interface [" << packet_buffer[PACKET_INTERFACE] << "/ expected:" << intf << std::endl;
 			return -2;
 		}
 
@@ -124,30 +126,13 @@ unsigned char RTnoProtocol::GetRTnoExecutionContextType()
 
 int RTnoProtocol::ActivateRTno()
 {
-	std::cout << "-RTnoProtocol::ActivateRTno() called."<< std::ends;
+	std::cout << "-RTnoProtocol::ActivateRTno() called."<< std::endl;
 	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
 	m_pTransport->SendPacket(ACTIVATE, 0, NULL);
-	while(1) {
-		int ret = m_pTransport->ReceivePacket(packet_buffer);
-		if(ret == 0) continue;
-		if(ret == -TIMEOUT) {
-			std::cout << "---Timeout Error." << std::endl;
-			return -1; // Timeout or Checksum error.
-		} else if(ret == -CHECKSUM_ERROR) {
-			std::cout << "---Checksum Error." << std::endl;
-			return -1;
-		}
-		if(packet_buffer[PACKET_INTERFACE] != ACTIVATE) {
-			return -2;
-		}
-
-		if(packet_buffer[DATA_START_ADDR] != RTNO_OK) {
-			return -3;
-		}
-
-		return 0;
-	}
+	int ret = ReceiveReturnCode(ACTIVATE);
+	if(ret != RTNO_OK) return ret;
+	return 0;
 }
 
 int RTnoProtocol::DeactivateRTno()
@@ -156,31 +141,18 @@ int RTnoProtocol::DeactivateRTno()
 	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
 	m_pTransport->SendPacket(DEACTIVATE, 0, NULL);
-	while(1) {
-		int ret = m_pTransport->ReceivePacket(packet_buffer);
-		if(ret == 0) continue;
-		if(ret == -TIMEOUT) {
-			std::cout << "---Timeout Error." << std::endl;
-			return -1; // Timeout or Checksum error.
-		} else if(ret == -CHECKSUM_ERROR) {
-			std::cout << "---Checksum Error." << std::endl;
-			return -1;
-		}
-
-		if(packet_buffer[PACKET_INTERFACE] != DEACTIVATE) {
-			continue; // Throw away accumulated packets....
-		}
-
-		if(packet_buffer[DATA_START_ADDR] != RTNO_OK) {
-			return -3;
-		} 
-		return 0;
-	}
+	int ret = ReceiveReturnCode(DEACTIVATE);
+	if(ret != RTNO_OK) return ret;
+	return 0;
 }
 
 
 int RTnoProtocol::SendData(const char* portName, const unsigned char* data, int length)
 {
+	while(this->m_SendBusy) {
+		coil::TimeValue tv(1000.0); // 1 ms;
+		coil::sleep(tv);
+	}
 	//std::cout << "-RTnoProtocol::SendData() called."<< std::endl;
 	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
@@ -189,7 +161,28 @@ int RTnoProtocol::SendData(const char* portName, const unsigned char* data, int 
 	packet_buffer[1] = length;
 	memcpy(packet_buffer+2, portName, namelen);
 	memcpy(packet_buffer+2+namelen, data, length);
+	m_SendBusy = TRUE;
 	m_pTransport->SendPacket(SEND_DATA, length + namelen + 2, packet_buffer);
+
+	/*
+	while(1) {
+		int ret = m_pTransport->ReceivePacket(packet_buffer);
+		if(ret == 0) {
+			continue;
+		} else if(ret < 0) {
+			return -1;
+		}
+
+		if(packet_buffer[PACKET_INTERFACE] != SEND_DATA) {
+			return -2;
+		}
+
+		if(packet_buffer[DATA_START_ADDR] != RTNO_OK) {
+			return -3;
+		}
+		return 0;
+	}
+	*/
 	return 0;
 }
 
@@ -238,6 +231,9 @@ int RTnoProtocol::HandleReceivedPacket(void)
 		if(packet_buffer[DATA_START_ADDR] != RTNO_OK) {
 			return -4;
 		}
+		break;
+	case SEND_DATA:
+		this->m_SendBusy = FALSE;
 		break;
 	default:
 		std::cout << "Unknown Packet [" << packet_buffer[PACKET_INTERFACE] << "]" << std::endl;

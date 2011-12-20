@@ -12,6 +12,7 @@ namespace org {
 		class RTnoProtocol
 		{
 		private:
+			int m_SendBusy;
 			Transport *m_pTransport;
 			RTnoRTObjectWrapper *m_pRTObjectWrapper;
 		public:
@@ -30,6 +31,7 @@ namespace org {
 			int ReceiveData(unsigned char* packet_buffer);
 			int SendExecuteTrigger();
 
+			int ReceiveReturnCode(unsigned char intf);
 
 			int HandleReceivedPacket(void);
 		private:

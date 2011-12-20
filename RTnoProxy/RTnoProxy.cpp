@@ -87,6 +87,7 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	// <rtc-template block="registration">
 	// Set InPort buffers
 
+
 	// Set OutPort buffer
 
 	// Set service provider to Ports
@@ -96,6 +97,7 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	// Set CORBA Service Ports
 
 	// </rtc-template>
+
 
 	std::cout << "Opening SerialPort(" << m_comport << ")....." << std::ends;
 	try {
@@ -110,6 +112,7 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 		return RTC::RTC_ERROR;
 	}
 	std::cout << "OK." << std::endl;
+
 
 	coil::TimeValue interval(0, 1000*1000);
 	std::cout << "Waiting for Startup the arduino...\n";
@@ -135,8 +138,10 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 
 
 	unsigned char contextType = m_pProtocol->GetRTnoExecutionContextType();
+	std::cout << "Execution Context Type == " << contextType << std::endl;
 	switch(contextType) {
 		case ProxySynchronousExecutionContext:
+			std::cout << "--ProxySynchronousExecutionContext detected!" << std::endl;
 			this->m_ProxySynchronousExecution = true;
 			break;
 		default:
@@ -176,6 +181,7 @@ RTC::ReturnCode_t RTnoProxy::onActivated(RTC::UniqueId ec_id)
 {
 	int ret;
 	if((ret = m_pProtocol->ActivateRTno()) == 0) {
+		
 		return RTC::RTC_OK;
 	}
 
