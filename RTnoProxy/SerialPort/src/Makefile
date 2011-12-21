@@ -5,7 +5,7 @@ all: $(TARGET)
 
 CC=g++
 AR=ar
-CFLAGS=-O2 -Wall -I../include -c
+CFLAGS=-O2 -Wall -fPIC -I../include -c 
 ARFLAGS=urv
 
 OBJECTS=SerialPort.o

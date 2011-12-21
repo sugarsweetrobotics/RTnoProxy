@@ -4,6 +4,14 @@
 
 #include <iostream>
 
+#ifndef FALSE
+#define FALSE (0)
+#endif
+
+#ifndef TRUE
+#define TRUE (!FALSE)
+#endif
+
 using namespace org::ysuga;
 
 RTnoProtocol::RTnoProtocol(RTnoRTObjectWrapper* pRTObject, Transport *pTransport)
@@ -73,7 +81,7 @@ int RTnoProtocol::GetRTnoProfile(RTnoProfile *profile)
 
 unsigned char RTnoProtocol::GetRTnoStatus()
 {	
-	unsigned char packet_buffer[MAX_PACKET_SIZE];
+  //	unsigned char packet_buffer[MAX_PACKET_SIZE];
 	std::cout << "-RTnoProtocol::GetRTnoStatus() called." << std::endl;
 //	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
@@ -84,7 +92,7 @@ unsigned char RTnoProtocol::GetRTnoStatus()
 unsigned char RTnoProtocol::GetRTnoExecutionContextType()
 {
 	std::cout << "-RTnoProtocol::GetRTnoExecutionContextType() called." << std::endl;
-	unsigned char packet_buffer[MAX_PACKET_SIZE];
+	//	unsigned char packet_buffer[MAX_PACKET_SIZE];
 	
 	m_pTransport->SendPacket(GET_CONTEXT, 0, NULL);
 	return ReceiveReturnCode(GET_CONTEXT);
@@ -127,7 +135,7 @@ int RTnoProtocol::ReceiveReturnCode(unsigned char intf) {
 int RTnoProtocol::ActivateRTno()
 {
 	std::cout << "-RTnoProtocol::ActivateRTno() called."<< std::endl;
-	unsigned char packet_buffer[MAX_PACKET_SIZE];
+	//	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
 	m_pTransport->SendPacket(ACTIVATE, 0, NULL);
 	int ret = ReceiveReturnCode(ACTIVATE);
@@ -138,7 +146,7 @@ int RTnoProtocol::ActivateRTno()
 int RTnoProtocol::DeactivateRTno()
 {
 	std::cout << "-RTnoProtocol::DeactivateRTno() called."<< std::endl;
-	unsigned char packet_buffer[MAX_PACKET_SIZE];
+	//	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
 	m_pTransport->SendPacket(DEACTIVATE, 0, NULL);
 	int ret = ReceiveReturnCode(DEACTIVATE);

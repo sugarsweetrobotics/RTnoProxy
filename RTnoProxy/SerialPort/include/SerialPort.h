@@ -14,7 +14,7 @@
 #include "ComOpenException.h"
 #include "ComStateException.h"
 
-#include "SerialDevice.h"
+#include "../../SerialDevice.h"
 
 #ifdef WIN32
 #include <windows.h>

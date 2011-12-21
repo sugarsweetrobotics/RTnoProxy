@@ -1,6 +1,9 @@
 #ifndef INPORT_WRAPPER_HEADER_INCLUDED
 #define INPORT_WRAPPER_HEADER_INCLUDED
 
+#include "rtm/Typename.h"
+#include "rtm/idl/BasicDataType.hh"
+#include "rtm/InPort.h"
 
 class InPortWrapperBase
 {
@@ -38,7 +41,7 @@ class InPortWrapper : public InPortWrapperBase
  public:
  InPortWrapper(const char* name) : InPortWrapperBase(name) {
 	 m_TypeCode = CORBA_Util::toTypename<DataType>();
-    m_pPort  = new RTC::InPort<DataType>(name, m_Value);
+	 m_pPort  = new RTC::InPort<DataType>(name, m_Value);
   }
   
   ~InPortWrapper()

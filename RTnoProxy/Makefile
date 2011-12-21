@@ -26,7 +26,7 @@ WRAPPER_FLAGS = --include-dir="" --skel-suffix=Skel --stub-suffix=Stub
 SKEL_OBJ = 
 STUB_OBJ = 
 IMPL_OBJ = 
-OBJS     = RTnoProxy.o SerialPort/lib/SerialPort.a SendPacket.o ReceivePacket.o $(SKEL_OBJ) $(STUB_OBJ) $(IMPL_OBJ)
+OBJS     = RTnoProxy.o SerialPort/lib/SerialPort.a RTnoProtocol.o Transport.o RTnoRTObjectWrapper.o  $(SKEL_OBJ) $(STUB_OBJ) $(IMPL_OBJ)
 
 .SUFFIXES : .so
 
