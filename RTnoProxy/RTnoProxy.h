@@ -267,6 +267,9 @@ class RTnoProxy
 
   std::string m_comport;
   int m_baudrate;
+  std::string m_connectionType;
+  std::string m_ipAddress;
+  int m_portNumber;
 
   org::ysuga::Transport* m_pTransport;
   org::ysuga::RTnoProtocol* m_pProtocol;

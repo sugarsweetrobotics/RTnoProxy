@@ -181,6 +181,10 @@
 			UniqueIdentifier="{FF74F337-3160-48C6-943A-FF3AF6C788D4}"
 			>
 			<File
+				RelativePath=".\EtherTcp.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\RTnoProtocol.cpp"
 				>
 			</File>
@@ -198,6 +202,10 @@
 			</File>
 			<File
 				RelativePath=".\SerialPort\src\SerialPort.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Thread.cpp"
 				>
 			</File>
 			<File
@@ -228,6 +236,10 @@
 			</File>
 			<File
 				RelativePath=".\SerialDevice.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Thread.h"
 				>
 			</File>
 			<File
