@@ -15,7 +15,8 @@
 #include <windows.h>
 #define THREAD_ROUTINE DWORD WINAPI
 #else
-
+#include <pthread.h>
+#define THREAD_ROUTINE void*
 #endif
 
 
@@ -30,7 +31,7 @@ namespace net {
 #ifdef WIN32
 			HANDLE m_Handle;
 #else
-
+			
 #endif
 		public:
 			Mutex();
@@ -53,7 +54,8 @@ namespace net {
 			HANDLE m_Handle;
 			DWORD m_ThreadId;
 #else
-
+			pthread_t m_Handle;
+			
 #endif
 		public:
 			Thread(void);

@@ -42,8 +42,8 @@ class InPortWrapper : public InPortWrapperBase
   
  public:
  InPortWrapper(const char* name) : InPortWrapperBase(name) {
-    m_TypeCode = CORBA_Util::toTypename<DataType>();
-    //m_TypeCode = toTypename<DataType>();
+    //m_TypeCode = CORBA_Util::toTypename<DataType>();
+    m_TypeCode = toTypename<DataType>();
 	 m_pPort  = new RTC::InPort<DataType>(name, m_Value);
   }
   
@@ -101,8 +101,8 @@ private:
  public:
  SeqInPortWrapper(const char* name) : InPortWrapperBase(name)
   {
-    m_TypeCode = CORBA_Util::toTypename<DataType>();
-   // m_TypeCode = toTypename<DataType>();
+    //m_TypeCode = CORBA_Util::toTypename<DataType>();
+    m_TypeCode = toTypename<DataType>();
     m_pValue = new DataType();
     m_pPort  = new RTC::InPort<DataType>(name, *m_pValue);
   }

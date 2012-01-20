@@ -10,4 +10,5 @@ bin/DataPortTestComp:
 clean:
 	cd RTnoProxy; ${MAKE} clean;
 	cd DataPortTest; ${MAKE} clean;
+	cd libysuga; ${MAKE} clean;
 	rm -rf bin/RTnoProxyComp bin/DataPortTestComp *~

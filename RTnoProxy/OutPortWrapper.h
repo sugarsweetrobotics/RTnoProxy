@@ -42,8 +42,8 @@ class OutPortWrapper : public OutPortWrapperBase
  public:
  OutPortWrapper(const char* name) : OutPortWrapperBase(name)
   {
-  // m_TypeCode = toTypename<DataType>();
-   m_TypeCode = CORBA_Util::toTypename<DataType>();
+   m_TypeCode = toTypename<DataType>();
+   // m_TypeCode = CORBA_Util::toTypename<DataType>();
     m_pPort  = new RTC::OutPort<DataType>(name, m_Value);
   }
   
@@ -93,8 +93,8 @@ private:
   
  public:
  SeqOutPortWrapper(const char* name) : OutPortWrapperBase(name) {
-    //m_TypeCode = toTypename<DataType>();
-    m_TypeCode = CORBA_Util::toTypename<DataType>();
+    m_TypeCode = toTypename<DataType>();
+    //m_TypeCode = CORBA_Util::toTypename<DataType>();
     m_pPort  = new RTC::OutPort<DataType>(name, m_Value);
   }
   

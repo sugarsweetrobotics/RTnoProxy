@@ -6,7 +6,8 @@
 #include <windows.h>
 
 #else
-
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 
 #endif
@@ -51,7 +52,8 @@ namespace net {
 			/**
 			 * @brief file descriptor
 			 */
-			int m_Fd;
+			int m_Socket;
+			struct sockaddr_in m_SocketAddr;
 		#endif
 
 		public:

@@ -181,7 +181,7 @@ int SerialPort::write(const void* src, const unsigned int size)
 	return WrittenBytes;
 #else
 	int ret;
-	if((ret = write(m_Fd, src, size)) < 0) {
+	if((ret = ::write(m_Fd, src, size)) < 0) {
 		throw ComAccessException();
 	}
 	return ret;
@@ -201,7 +201,7 @@ int SerialPort::read(void *dst, const unsigned int size)
 	return ReadBytes;
 #else
 	int ret;
-	if((ret = read(m_Fd, dst, size))< 0) {
+	if((ret = ::read(m_Fd, dst, size))< 0) {
 		throw ComAccessException();
 	}
 	return ret;

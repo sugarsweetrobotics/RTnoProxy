@@ -1,4 +1,4 @@
-TARGET=../lib/SerialPort.a
+TARGET=../lib/libysuga.a
 
 all: $(TARGET)
 
@@ -6,16 +6,16 @@ all: $(TARGET)
 CC=g++
 AR=ar
 CFLAGS=-O2 -Wall -fPIC -I../include -c 
-ARFLAGS=urv
+ARFLAGS=rv
 
-OBJECTS=SerialPort.o
+OBJECTS=SerialPort.o Socket.o Thread.o Mutex.o 
 
 .cpp.o:
 	$(CC) $(CFLAGS) $<
 
 
-../lib/SerialPort.a: $(OBJECTS)
-	$(AR) $(ARFLAGS) ../lib/SerialPort.a $(OBJECTS)
+../lib/libysuga.a: $(OBJECTS)
+	$(AR) $(ARFLAGS) ../lib/libysuga.a $(OBJECTS)
 
 
 clean:

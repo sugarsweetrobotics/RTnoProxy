@@ -1,6 +1,6 @@
-This is RTno v2.0.0
+This is RTno v2.2.0
 
-Released in 2011/12/21
+Released in 2012/1/21
 
 
 author: Yuki Suga (ysuga@ysuga.net)

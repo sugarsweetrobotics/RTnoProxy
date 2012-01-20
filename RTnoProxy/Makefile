@@ -14,8 +14,8 @@
 #
 # $Id$
 #
-CXXFLAGS = `rtm-config --cflags` -I. -ISerialPort/include
-LDFLAGS  = `rtm-config --libs` -LSerialPort/lib/SerialPort.a
+CXXFLAGS = `rtm-config --cflags` -I. -I../libysuga/include
+LDFLAGS  = `rtm-config --libs` 
 SHFLAGS  = -shared
 
 IDLC     = `rtm-config --idlc`
@@ -26,14 +26,16 @@ WRAPPER_FLAGS = --include-dir="" --skel-suffix=Skel --stub-suffix=Stub
 SKEL_OBJ = 
 STUB_OBJ = 
 IMPL_OBJ = 
-OBJS     = RTnoProxy.o SerialPort/lib/SerialPort.a RTnoProtocol.o Transport.o RTnoRTObjectWrapper.o  $(SKEL_OBJ) $(STUB_OBJ) $(IMPL_OBJ)
+OBJS     = RTnoProxy.o RTnoProtocol.o RTnoRTObjectWrapper.o Transport.o EtherTcp.o Serial.o $(SKEL_OBJ) $(STUB_OBJ) $(IMPL_OBJ)
+
+LIBS = ../libysuga/lib/libysuga.a
 
 .SUFFIXES : .so
 
 all: RTnoProxy.so ../bin/RTnoProxyComp
 
-SerialPort/lib/SerialPort.a:
-	cd SerialPort; $(MAKE)
+../libysuga/lib/libysuga.a:
+	cd ../libysuga; $(MAKE)
 
 .cpp.o:
 	rm -f $@
@@ -41,10 +43,10 @@ SerialPort/lib/SerialPort.a:
 
 .o.so:
 	rm -f $@
-	$(CXX) $(SHFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(CXX) $(SHFLAGS) -o $@ $(OBJS) ../libysuga/lib/libysuga.a $(LDFLAGS)
 
 RTnoProxyComp: RTnoProxyComp.o $(OBJS)
-	$(CXX) -o $@ $(OBJS) RTnoProxyComp.o $(LDFLAGS) 
+	$(CXX) -o $@ $(OBJS) RTnoProxyComp.o ../libysuga/lib/libysuga.a $(LDFLAGS) 
 
 
 ../bin/RTnoProxyComp: RTnoProxyComp
@@ -52,7 +54,6 @@ RTnoProxyComp: RTnoProxyComp.o $(OBJS)
 
 clean: clean_objs clean_skelstub
 	rm -f *~
-	cd SerialPort; $(MAKE) clean
 
 clean_objs:
 	rm -f $(OBJS) RTnoProxyComp.o RTnoProxy.so RTnoProxyComp
@@ -63,7 +64,7 @@ clean_skelstub:
 
 
 
-RTnoProxy.so: $(OBJS)
+RTnoProxy.so: $(OBJS) ../libysuga/lib/libysuga.a
 RTnoProxy.o: RTnoProxy.h 	 	
 RTnoProxyComp.o: RTnoProxyComp.cpp RTnoProxy.cpp RTnoProxy.h 
 
