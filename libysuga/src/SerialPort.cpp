@@ -104,7 +104,7 @@ SerialPort::~SerialPort()
 
 /*******************************
  */
-void SerialPort::FlushRxBuffer()
+void SerialPort::flushRxBuffer()
 {
 #ifdef WIN32
 	if(!PurgeComm(m_hComm, PURGE_RXCLEAR)) {
@@ -119,7 +119,7 @@ void SerialPort::FlushRxBuffer()
 
 /*******************************
  */
-void SerialPort::FlushTxBuffer()
+void SerialPort::flushTxBuffer()
 {
 #ifdef WIN32
 	if(!PurgeComm(m_hComm, PURGE_TXCLEAR)) {
@@ -134,7 +134,7 @@ void SerialPort::FlushTxBuffer()
 
 /*******************************
  */
-int SerialPort::GetSizeInRxBuffer()
+int SerialPort::getSizeInRxBuffer()
 {
 #ifdef WIN32
     COMSTAT         stat;
@@ -170,7 +170,7 @@ int SerialPort::GetSizeInRxBuffer()
 
 /*******************************
  */
-int SerialPort::Write(const void* src, const unsigned int size)
+int SerialPort::write(const void* src, const unsigned int size)
 {
 #ifdef WIN32
 	DWORD WrittenBytes;
@@ -190,7 +190,7 @@ int SerialPort::Write(const void* src, const unsigned int size)
 
 /*******************************
  */
-int SerialPort::Read(void *dst, const unsigned int size)
+int SerialPort::read(void *dst, const unsigned int size)
 {
 #ifdef WIN32
 	DWORD ReadBytes;

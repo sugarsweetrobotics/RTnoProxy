@@ -1,10 +1,6 @@
 #pragma once
 
-#include <rtm/DataFlowComponentBase.h>
 #include <map>
-
-#include "InPortWrapper.h"
-#include "OutPortWrapper.h"
 
 #include "RTnoProfile.h"
 
@@ -13,7 +9,7 @@ typedef std::map<std::string, InPortWrapperBase*>::iterator InPortMapIterator;
 typedef std::map<std::string, OutPortWrapperBase*> OutPortMap;
 typedef std::map<std::string, OutPortWrapperBase*>::iterator OutPortMapIterator;
 
-namespace org {
+namespace net {
 	namespace ysuga {
 class RTnoRTObjectWrapper
 {
@@ -36,11 +32,11 @@ public:
 	int AddInPortWrapper(char TypeCode, const char* PortName);
 	int AddOutPortWrapper(char TypeCode, const char* PortName);
 
-	int AddInPort(org::ysuga::PortProfile* profile) {
+	int AddInPort(PortProfile* profile) {
 		return AddInPortWrapper(profile->GetTypeCode(), profile->GetPortName());
 	}
 
-	int AddOutPort(org::ysuga::PortProfile* profile) {
+	int AddOutPort(PortProfile* profile) {
 		return AddOutPortWrapper(profile->GetTypeCode(), profile->GetPortName());
 	}
 

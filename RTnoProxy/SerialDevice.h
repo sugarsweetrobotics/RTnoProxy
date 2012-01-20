@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace org {
+namespace net {
 	namespace ysuga {
 
 		class SerialDevice

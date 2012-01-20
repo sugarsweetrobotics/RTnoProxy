@@ -5,7 +5,7 @@
 
 
 
-namespace org {
+namespace net {
 	namespace ysuga {
 		class RTnoRTObjectWrapper;
 

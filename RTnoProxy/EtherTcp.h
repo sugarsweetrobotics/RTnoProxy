@@ -10,7 +10,7 @@
 #include "Socket.h"
 
 
-namespace org {
+namespace net {
 	namespace ysuga {
 
 		/***************************************************

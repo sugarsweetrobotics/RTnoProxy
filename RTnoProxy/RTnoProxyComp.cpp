@@ -7,7 +7,8 @@
  * $Id$
  */
 
-#include <rtm/Manager.h>
+#include "stdafx.h"
+
 #include <iostream>
 #include <string>
 #include <stdlib.h>

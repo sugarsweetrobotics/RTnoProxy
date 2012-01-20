@@ -7,13 +7,15 @@
  * $Id$
  */
 
-
+#include "stdafx.h"
 #include "RTnoProxy.h"
 #include "InPortWrapper.h"
 #include <coil/Time.h>
-#include "EtherTcpTransport.h"
 
 #include "Packet.h"
+
+#include "EtherTcp.h"
+#include "Serial.h"
 
 enum {
   CREATED='C',
@@ -28,7 +30,7 @@ enum {
 // Module specification
 // <rtc-template block="module_spec">
 
-using namespace org::ysuga;
+using namespace net::ysuga;
 
 static const char* rtno_spec[] =
   {
@@ -105,15 +107,15 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	if(m_connectionType == "serial") {
 		try {
 			std::cout << "Opening SerialPort(" << m_comport << ")....." << std::ends;
-			m_pTransport = new UARTTransport(m_comport.c_str(), m_baudrate);
+			m_pSerialDevice = new Serial(m_comport.c_str(), m_baudrate);
 		} catch (ComOpenException & e) {
-			std::cout << "Fail" << std::endl;
+			std::cout << "Fail(" << e.what() << ")" << std::endl;
 			return RTC::RTC_ERROR;
 		}
 	} else if(m_connectionType == "tcp") {
 		try {
 			std::cout << "Connecting to " << m_ipAddress << ":" << m_portNumber << " with TCP" << std::ends;
-			m_pTransport = new EtherTcpTransport(m_ipAddress.c_str(), m_portNumber);
+			m_pSerialDevice = new EtherTcp(m_ipAddress.c_str(), m_portNumber);
 		} catch (...) {
 			std::cout << "Fail" << std::endl;
 			return RTC::RTC_ERROR;
@@ -123,9 +125,11 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	//  m_pSerialPort = new SerialPort(m_comport.c_str(), m_baudrate);
 	//m_pTransport = new UARTTransport(m_comport.c_str(), m_baudrate);
 	//m_pTransport = new EtherTcpTransport("192.168.42.100", 23);
+	m_pTransport = new Transport(m_pSerialDevice);
 	m_pRTObjectWrapper = new RTnoRTObjectWrapper(this);
 	m_pProtocol = new RTnoProtocol(m_pRTObjectWrapper, m_pTransport);
-	m_pProfile  = new RTnoProfile();
+	//m_pProfile  = new RTnoProfile();
+	
 	std::cout << "OK." << std::endl;
 
 
@@ -138,12 +142,12 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 
 	std::cout << "Starting up onInitialize sequence." << std::endl;
 
-	m_pProtocol->GetRTnoProfile(m_pProfile); 
-	PortList* pInPortList = m_pProfile->GetInPortList();
+	m_pProtocol->GetRTnoProfile(&m_Profile); 
+	PortList* pInPortList = m_Profile.GetInPortList();
 	for(PortListIterator it = pInPortList->begin();it != pInPortList->end();++it) {
 		m_pRTObjectWrapper->AddInPort((*it));
 	}
-	PortList* pOutPortList = m_pProfile->GetOutPortList();
+	PortList* pOutPortList = m_Profile.GetOutPortList();
 	for(PortListIterator it = pOutPortList->begin();it != pOutPortList->end();++it) {
 		m_pRTObjectWrapper->AddOutPort((*it));
 	}
@@ -171,8 +175,9 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 RTC::ReturnCode_t RTnoProxy::onFinalize()
 {
 	delete m_pProtocol;
-	delete m_pProfile;
+	//delete m_pProfile;
 	delete m_pTransport;
+	delete m_pSerialDevice;
 	return RTC::RTC_OK;
 }
 

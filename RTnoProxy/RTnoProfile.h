@@ -4,7 +4,7 @@
 #include <list>
 
 
-namespace org {
+namespace net {
 	namespace ysuga {
 
 		class PortProfile 

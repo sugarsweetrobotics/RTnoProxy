@@ -43,8 +43,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".; SerialPort\include"
-				PreprocessorDefinitions="USE_stub_in_nt_dll;WIN32;_DEBUG;_CONSOLE;__WIN32__;__x86__;_WIN32_WINNT=0x0500;__NT__;__OSVERSION__=4;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories=".; $(SolutionDir)libysuga\include"
+				PreprocessorDefinitions="USE_stub_in_nt_dll;WIN32;_DEBUG;_CONSOLE;__WIN32__;__x86__;_WIN32_WINNT=0x0500;__NT__;__OSVERSION__=4;_CRT_SECURE_NO_DEPRECATE;LIBYSUGA_STATIC_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -64,9 +64,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(rtm_libd) $(coil_libd)"
+				AdditionalDependencies="$(rtm_libd) $(coil_libd) libysugaStaticD.lib"
 				OutputFile="$(OutDir)\RTnoProxyComp.exe"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="$(SolutionDir)libysuga\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -119,8 +120,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".; SerialPort\include"
-				PreprocessorDefinitions="USE_stub_in_nt_dll;WIN32;NDEBUG;_CONSOLE;__WIN32__;__x86__;_WIN32_WINNT=0x0500;__NT__;__OSVERSION__=4;_CRT_SECURE_NO_DEPRECATE"
+				AdditionalIncludeDirectories=".; $(SolutionDir)libysuga\include"
+				PreprocessorDefinitions="USE_stub_in_nt_dll;WIN32;NDEBUG;_CONSOLE;__WIN32__;__x86__;_WIN32_WINNT=0x0500;__NT__;__OSVERSION__=4;_CRT_SECURE_NO_DEPRECATE;LIBYSUGA_STATIC_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -138,9 +139,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(rtm_lib) $(coil_lib)"
+				AdditionalDependencies="$(rtm_lib) $(coil_lib) libysugaStatic.lib"
 				OutputFile="$(OutDir)\RTnoProxyComp.exe"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(SolutionDir)libysuga\lib"
 				GenerateDebugInformation="false"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -201,7 +203,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SerialPort\src\SerialPort.cpp"
+				RelativePath=".\Serial.cpp"
 				>
 			</File>
 			<File
@@ -231,19 +233,11 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Serial.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SerialDevice.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SerialPort\include\SerialPort.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Socket.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Socket.h"
 				>
 			</File>
 			<File

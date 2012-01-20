@@ -32,7 +32,7 @@ int get_buffer_size() {
 	return size;
 }
 
-using namespace org::ysuga;
+using namespace net::ysuga;
 
 EtherTcp::EtherTcp(const char* ipAddress, int port)
 {
@@ -107,11 +107,11 @@ int EtherTcp::Read(void *dst, const unsigned int size)
 {
 	//return recv(m_ServerSocket, (char*)dst, size, 0);
 	unsigned char *dist_buf = (unsigned char*)dst;
-	unsigned int size_read = size;
-	if(size >= get_buffer_size()) {
+	unsigned int size_read =  size;
+	if(size >= (unsigned int)get_buffer_size()) {
 		size_read = get_buffer_size();
 	}
-	for(int i = 0;i < size_read;i++) {
+	for(unsigned int i = 0;i < size_read;i++) {
 		dist_buf[i] = buffer_pop();
 	}
 		

@@ -2,7 +2,7 @@
 
 #include "SerialDevice.h"
 
-namespace org {
+namespace net {
 	namespace ysuga { 
 		class Transport
 		{

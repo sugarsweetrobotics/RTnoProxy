@@ -8,7 +8,7 @@
 #define PACKET_WAITING_DELAY 100 //us
 #define PACKET_WAITING_COUNT (PACKET_WAITING_TIME*1000/PACKET_WAITING_DELAY)
 
-using namespace org::ysuga;
+using namespace net::ysuga;
 
 Transport::Transport(SerialDevice* pSerialDevice)
 {

@@ -22,14 +22,7 @@
 #ifndef RTNOPROXY_H
 #define RTNOPROXY_H
 
-#include <rtm/Manager.h>
-#include <rtm/DataFlowComponentBase.h>
-#include <rtm/CorbaPort.h>
-#include <rtm/DataInPort.h>
-#include <rtm/DataOutPort.h>
-#include <rtm/idl/BasicDataTypeSkel.h>
-#include <rtm/idl/ExtendedDataTypesSkel.h>
-#include <rtm/idl/InterfaceDataTypesSkel.h>
+
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
@@ -45,7 +38,7 @@
 //#include "SerialPort.h"
 #include "RTnoRTObjectWrapper.h"
 #include "RTnoProtocol.h"
-#include "UARTTransport.h"
+#include "Transport.h"
 
 using namespace RTC;
 
@@ -283,12 +276,12 @@ class RTnoProxy
   std::string m_ipAddress;
   int m_portNumber;
 
-  org::ysuga::Transport* m_pTransport;
-  org::ysuga::RTnoProtocol* m_pProtocol;
+  net::ysuga::Transport* m_pTransport;
+  net::ysuga::RTnoProtocol* m_pProtocol;
+  net::ysuga::SerialDevice *m_pSerialDevice;
+  net::ysuga::RTnoProfile m_Profile;
 
-  org::ysuga::RTnoProfile* m_pProfile;
-
-  org::ysuga::RTnoRTObjectWrapper *m_pRTObjectWrapper;
+  net::ysuga::RTnoRTObjectWrapper *m_pRTObjectWrapper;
 
   bool m_ProxySynchronousExecution;
 };

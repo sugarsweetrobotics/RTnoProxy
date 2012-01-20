@@ -9,10 +9,10 @@
 #ifndef SERIAL_PORT_HEADER_INCLUDED
 #define SERIAL_PORT_HEADER_INCLUDED
 
+#include "libysuga.h"
+
 #include <exception>
 #include <string>
-
-#include "../../SerialDevice.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -24,7 +24,7 @@ namespace net {
 		/**
 		 * Base Class for Exception
 		 */
-		class ComException : public std::exception {
+		class LIBYSUGA_API ComException : public std::exception {
 		private:
 			std::string msg;
 		public:
@@ -37,7 +37,7 @@ namespace net {
 		/**
 		 * @brief  This exception is thrown when COM port accessing is wrong.
 		 */
-		class  ComAccessException : public ComException {
+		class LIBYSUGA_API ComAccessException : public ComException {
 		public:
 			ComAccessException(void) : ComException("COM Access") {}
 			virtual ~ComAccessException(void) throw() {}
@@ -46,7 +46,7 @@ namespace net {
 		/**
 		 * @brief  This exception is thrown when COM port state is wrong.
 		 */
-		class ComStateException : public ComException {
+		class LIBYSUGA_API ComStateException : public ComException {
 		public:
 			ComStateException(void) : ComException ("COM State Exception") {}
 			virtual ~ComStateException(void) throw() {}
@@ -55,7 +55,7 @@ namespace net {
 		/**
 		 * @brief This exception is thrown when Opening COM port is failed.
 		 */
-		class ComOpenException : ComException  {
+		class LIBYSUGA_API ComOpenException : public ComException  {
 		public:
 			ComOpenException(void) : ComException ("COM Open Error") {}
 			virtual ~ComOpenException(void) throw() {}
@@ -69,7 +69,7 @@ namespace net {
 		 *
 		 * @brief Portable Serial Port Class
 		 ***************************************************/
-		class SerialPort : public SerialDevice
+		class LIBYSUGA_API SerialPort
 		{
 		private:
 #ifdef WIN32
@@ -104,31 +104,31 @@ namespace net {
 			 * @brief flush receive buffer.
 			 * @return zero if success.
 			 */
-			void FlushRxBuffer();
+			void flushRxBuffer();
 
 			/**
 			 * @brief flush transmit buffer.
 			 * @return zero if success.
 			 */
-			void FlushTxBuffer();
+			void flushTxBuffer();
 
 		public:
 			/**
 			 * @brief Get stored datasize of in Rx Buffer
 			 * @return Stored Data Size of Rx Buffer;
 			 */
-			int GetSizeInRxBuffer();
+			int getSizeInRxBuffer();
 
 			/**
 			 * @brief write data to Tx Buffer of Serial Port.
 			 *
 			 */
-			int Write(const void* src, const unsigned int size);
+			int write(const void* src, const unsigned int size);
 
 			/**
 			 * @brief read data from RxBuffer of Serial Port 
 			 			 */
-			int Read(void *dst, const unsigned int size);
+			int read(void *dst, const unsigned int size);
 
 		};
 

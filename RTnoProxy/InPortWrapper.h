@@ -1,9 +1,11 @@
 #ifndef INPORT_WRAPPER_HEADER_INCLUDED
 #define INPORT_WRAPPER_HEADER_INCLUDED
 
+/*
 #include "rtm/Typename.h"
 #include "rtm/idl/BasicDataType.hh"
 #include "rtm/InPort.h"
+*/
 
 class InPortWrapperBase
 {

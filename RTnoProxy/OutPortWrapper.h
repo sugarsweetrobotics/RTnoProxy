@@ -1,9 +1,11 @@
 #ifndef OUTPORT_WRAPPER_HEADER_OUTCLUDED
 #define OUTPORT_WRAPPER_HEADER_OUTCLUDED
 
+/*
 #include "rtm/Typename.h"
 #include "rtm/OutPort.h"
 #include "rtm/idl/BasicDataType.hh"
+*/
 
 class OutPortWrapperBase
 {

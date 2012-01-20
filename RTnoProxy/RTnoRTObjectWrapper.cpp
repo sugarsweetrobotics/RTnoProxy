@@ -1,16 +1,20 @@
+#include "stdafx.h"
+
+/*
 #include <rtm/Manager.h>
 #include <rtm/CorbaPort.h>
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
 
 #include <rtm/idl/BasicDataType.hh>
+*/
 
 #include "RTnoRTObjectWrapper.h"
 
 #include "Packet.h"
 
 using namespace RTC;
-using namespace org::ysuga;
+using namespace net::ysuga;
 
 RTnoRTObjectWrapper::RTnoRTObjectWrapper(RTC::DataFlowComponentBase* pRTC)
 {

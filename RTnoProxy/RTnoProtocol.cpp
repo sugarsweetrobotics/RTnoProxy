@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "RTnoRTObjectWrapper.h"
 #include "Packet.h"
 #include "RTnoProtocol.h"
@@ -12,7 +14,7 @@
 #define TRUE (!FALSE)
 #endif
 
-using namespace org::ysuga;
+using namespace net::ysuga;
 
 RTnoProtocol::RTnoProtocol(RTnoRTObjectWrapper* pRTObject, Transport *pTransport)
 {
