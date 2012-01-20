@@ -36,28 +36,16 @@ using namespace org::ysuga;
 
 EtherTcp::EtherTcp(const char* ipAddress, int port)
 {
-	m_ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (m_ServerSocket == INVALID_SOCKET) {
-		std::cout << "--- Socket Create Error." << std::endl;
-		return;
-	}
-	m_SocketAddr.sin_family = AF_INET;
-	m_SocketAddr.sin_port = htons(port);
-	m_SocketAddr.sin_addr.S_un.S_addr = inet_addr(ipAddress);
-
-	if(connect(m_ServerSocket, (struct sockaddr *)&m_SocketAddr, sizeof(m_SocketAddr)) != 0) {
-		std::cout << "--- Socket Connect Error." << std::endl;
-		return;
-	}
-	Start();
+	m_pSocket = new net::ysuga::Socket(ipAddress, port);
+	coil::Task::activate();
 }
 
 
 EtherTcp::~EtherTcp()
 {
 	m_Endflag = 1;
-	Join();
-	closesocket(m_ServerSocket);
+	coil::Task::wait();
+	delete m_pSocket;
 }
 
 void EtherTcp::FlushRxBuffer()
@@ -109,12 +97,12 @@ int EtherTcp::GetSizeInRxBuffer()
  */
 int EtherTcp::Write(const void* src, const unsigned int size)
 {
-	return send(m_ServerSocket, (const char*)src, size, 0);
+	return m_pSocket->send((const char*)src, size);
 }
 
 /**
  * @brief read data from RxBuffer of Serial Port 
- 			 */
+ */
 int EtherTcp::Read(void *dst, const unsigned int size)
 {
 	//return recv(m_ServerSocket, (char*)dst, size, 0);
@@ -131,16 +119,16 @@ int EtherTcp::Read(void *dst, const unsigned int size)
 }
 
 
-void EtherTcp::Run(void)
+int EtherTcp::svc(void)
 {
 	m_Endflag = 0;
-	u_long flag = 1;
-	::ioctlsocket(m_ServerSocket, FIONBIO, &flag);
+	m_pSocket->setNonBlock(1);
 	while(!m_Endflag) {
 		char buf;
-		int sz = recv(m_ServerSocket, &buf, 1, 0);
+		int sz = m_pSocket->recv(&buf, 1);
 		if(sz == 1) {
 			buffer_push(buf);
 		}
 	}
+	return 0;
 }

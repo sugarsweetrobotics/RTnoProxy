@@ -3,12 +3,11 @@
 
 #include <exception>
 
-#include "SerialDevice.h"
-#include "Thread.h"
+#include <coil/Task.h>
 
-#ifdef WIN32
-#include <windows.h>
-#endif
+
+#include "SerialDevice.h"
+#include "Socket.h"
 
 
 namespace org {
@@ -19,21 +18,11 @@ namespace org {
 		 *
 		 * @brief Portable Serial Port Class
 		 ***************************************************/
-		class EtherTcp : public SerialDevice, public net::ysuga::Thread
+		class EtherTcp : public SerialDevice, public coil::Task
 		{
 		private:
 			int m_Endflag;
-#ifdef WIN32
-			SOCKET m_ServerSocket;
-			struct sockaddr_in m_SocketAddr;
-#else
-
-			/**
-			 * @brief file descriptor
-			 */
-			int m_Fd;
-#endif
-
+			net::ysuga::Socket *m_pSocket;
 
 
 		public:
@@ -82,7 +71,7 @@ namespace org {
 			int Read(void *dst, const unsigned int size);
 
 		public:
-			void Run(void);
+			virtual int svc(void);
 		};
 
 	};//namespace ysuga

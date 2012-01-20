@@ -10,9 +10,7 @@
 #define SERIAL_PORT_HEADER_INCLUDED
 
 #include <exception>
-#include "ComAccessException.h"
-#include "ComOpenException.h"
-#include "ComStateException.h"
+#include <string>
 
 #include "../../SerialDevice.h"
 
@@ -20,8 +18,51 @@
 #include <windows.h>
 #endif
 
-namespace org {
+namespace net {
 	namespace ysuga {
+
+		/**
+		 * Base Class for Exception
+		 */
+		class ComException : public std::exception {
+		private:
+			std::string msg;
+		public:
+			ComException(const char* msg) {this->msg = msg;}
+			virtual ~ComException() throw() {}
+		public:
+			const char* what() throw() {return msg.c_str();}
+		};
+
+		/**
+		 * @brief  This exception is thrown when COM port accessing is wrong.
+		 */
+		class  ComAccessException : public ComException {
+		public:
+			ComAccessException(void) : ComException("COM Access") {}
+			virtual ~ComAccessException(void) throw() {}
+		};
+
+		/**
+		 * @brief  This exception is thrown when COM port state is wrong.
+		 */
+		class ComStateException : public ComException {
+		public:
+			ComStateException(void) : ComException ("COM State Exception") {}
+			virtual ~ComStateException(void) throw() {}
+		};
+    
+		/**
+		 * @brief This exception is thrown when Opening COM port is failed.
+		 */
+		class ComOpenException : ComException  {
+		public:
+			ComOpenException(void) : ComException ("COM Open Error") {}
+			virtual ~ComOpenException(void) throw() {}
+		};
+
+
+
 
 		/***************************************************
 		 * SerialPort

@@ -10,8 +10,9 @@
 
 using namespace org::ysuga;
 
-Transport::Transport(void)
+Transport::Transport(SerialDevice* pSerialDevice)
 {
+	m_pSerialDevice = pSerialDevice;
 }
 
 Transport::~Transport(void)

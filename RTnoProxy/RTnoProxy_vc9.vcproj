@@ -194,14 +194,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SerialPort\src\SerialPort.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Thread.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Transport.cpp"
 				>
 			</File>
@@ -213,10 +205,6 @@
 			>
 			<File
 				RelativePath=".\EtherTcp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\EtherTcpTransport.h"
 				>
 			</File>
 			<File
@@ -248,45 +236,9 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SerialDevice.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Thread.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Transport.h"
 				>
 			</File>
-			<File
-				RelativePath=".\UARTTransport.h"
-				>
-			</File>
-			<Filter
-				Name="SerialPort"
-				>
-				<File
-					RelativePath=".\SerialPort\include\ComAccessException.h"
-					>
-				</File>
-				<File
-					RelativePath=".\SerialPort\include\ComException.h"
-					>
-				</File>
-				<File
-					RelativePath=".\SerialPort\include\ComOpenException.h"
-					>
-				</File>
-				<File
-					RelativePath=".\SerialPort\include\ComStateException.h"
-					>
-				</File>
-				<File
-					RelativePath=".\SerialPort\include\SerialPort.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

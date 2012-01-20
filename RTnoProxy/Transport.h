@@ -12,7 +12,7 @@ namespace org {
 			SerialDevice *m_pSerialDevice;
 
 		public:
-			Transport(void);
+			Transport(SerialDevice *pSerialDevice);
 			~Transport(void);
 
 
