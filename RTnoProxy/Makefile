@@ -13,7 +13,7 @@
 #
 #
 # $Id$
-#
+#˜
 CXXFLAGS = `rtm-config --cflags` -I. -I../libysuga/include
 LDFLAGS  = `rtm-config --libs` 
 SHFLAGS  = -shared

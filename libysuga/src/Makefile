@@ -2,8 +2,6 @@ TARGET=../lib/libysuga.a
 
 all: $(TARGET)
 
-
-CC=g++
 AR=ar
 CFLAGS=-O2 -Wall -fPIC -I../include -c 
 ARFLAGS=rv

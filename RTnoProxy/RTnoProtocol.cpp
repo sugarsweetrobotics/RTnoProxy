@@ -125,7 +125,7 @@ int RTnoProtocol::ReceiveReturnCode(unsigned char intf) {
 		}
 
 		if(packet_buffer[PACKET_INTERFACE] != intf) {
-			std::cout << "---Unknown Packet Interface [" << packet_buffer[PACKET_INTERFACE] << "/ expected:" << intf << std::endl;
+			std::cout << "---Unknown Packet Interface [" << packet_buffer[PACKET_INTERFACE] << "] expected:" << intf << std::endl;
 			return -2;
 		}
 
@@ -136,24 +136,28 @@ int RTnoProtocol::ReceiveReturnCode(unsigned char intf) {
 
 int RTnoProtocol::ActivateRTno()
 {
-	std::cout << "-RTnoProtocol::ActivateRTno() called."<< std::endl;
-	//	unsigned char packet_buffer[MAX_PACKET_SIZE];
-
-	m_pTransport->SendPacket(ACTIVATE, 0, NULL);
-	int ret = ReceiveReturnCode(ACTIVATE);
-	if(ret != RTNO_OK) return ret;
-	return 0;
+  std::cout << "-RTnoProtocol::ActivateRTno() called....";
+  m_pTransport->SendPacket(ACTIVATE, 0, NULL);
+  int ret = ReceiveReturnCode(ACTIVATE);
+  if(ret != RTNO_OK) {
+    std::cout << "Failed." << std::endl;
+    return ret;
+  }
+  std::cout << "Succeed." << std::endl;
+  return 0;
 }
 
 int RTnoProtocol::DeactivateRTno()
 {
-	std::cout << "-RTnoProtocol::DeactivateRTno() called."<< std::endl;
-	//	unsigned char packet_buffer[MAX_PACKET_SIZE];
-
-	m_pTransport->SendPacket(DEACTIVATE, 0, NULL);
-	int ret = ReceiveReturnCode(DEACTIVATE);
-	if(ret != RTNO_OK) return ret;
-	return 0;
+  std::cout << "-RTnoProtocol::DeactivateRTno() called....";
+  m_pTransport->SendPacket(DEACTIVATE, 0, NULL);
+  int ret = ReceiveReturnCode(DEACTIVATE);
+  if(ret != RTNO_OK) {
+    std::cout << "Failed." << std::endl;
+    return ret;
+  }
+  std::cout << "Succeed." << std::endl;
+  return 0;
 }
 
 

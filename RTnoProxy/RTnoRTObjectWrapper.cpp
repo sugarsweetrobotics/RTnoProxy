@@ -9,6 +9,7 @@
 #include <rtm/idl/BasicDataType.hh>
 */
 
+#include <stdint.h>
 #include "RTnoRTObjectWrapper.h"
 
 #include "Packet.h"
@@ -36,13 +37,13 @@ int RTnoRTObjectWrapper::AddInPortWrapper(char TypeCode, const char* PortName)
 	  inport = new InPortWrapper<TimedChar, char>(PortName);
 	  break;
 	case TYPECODE_TIMED_OCTET:
-	  inport = new InPortWrapper<TimedOctet, char>(PortName);
+	  inport = new InPortWrapper<TimedOctet, int8_t>(PortName);
 	  break;
 	case TYPECODE_TIMED_BOOLEAN:
 	  inport = new InPortWrapper<TimedBoolean, bool>(PortName);
 	  break;
 	case TYPECODE_TIMED_LONG:
-	  inport = new InPortWrapper<TimedLong, long>(PortName);
+	  inport = new InPortWrapper<TimedLong, int32_t>(PortName);
 	break;
 	case TYPECODE_TIMED_FLOAT:
 	  inport = new InPortWrapper<TimedFloat, float>(PortName);
@@ -54,13 +55,13 @@ int RTnoRTObjectWrapper::AddInPortWrapper(char TypeCode, const char* PortName)
 	  inport = new SeqInPortWrapper<TimedCharSeq, char>(PortName);
 	  break;
 	case TYPECODE_TIMED_OCTET_SEQ:
-	  inport = new SeqInPortWrapper<TimedOctetSeq, char>(PortName);
+	  inport = new SeqInPortWrapper<TimedOctetSeq, int8_t>(PortName);
 	  break;
 	case TYPECODE_TIMED_BOOLEAN_SEQ:
 	  inport = new SeqInPortWrapper<TimedBooleanSeq, bool>(PortName);  
 	  break;
 	case TYPECODE_TIMED_LONG_SEQ:
-	  inport = new SeqInPortWrapper<TimedLongSeq, long>(PortName);
+	  inport = new SeqInPortWrapper<TimedLongSeq, int32_t>(PortName);
 	break;
 	case TYPECODE_TIMED_FLOAT_SEQ:
 	  inport = new SeqInPortWrapper<TimedFloatSeq, float>(PortName);
@@ -90,13 +91,13 @@ int RTnoRTObjectWrapper::AddOutPortWrapper(char TypeCode, const char* PortName)
       outport = new OutPortWrapper<TimedChar, char>(PortName);
     break;
   case TYPECODE_TIMED_OCTET:
-      outport = new OutPortWrapper<TimedOctet, char>(PortName);
+      outport = new OutPortWrapper<TimedOctet, int8_t>(PortName);
     break;
   case TYPECODE_TIMED_BOOLEAN:
       outport = new OutPortWrapper<TimedBoolean, bool>(PortName);
     break;
   case TYPECODE_TIMED_LONG:
-      outport = new OutPortWrapper<TimedLong, long>(PortName);
+    outport = new OutPortWrapper<TimedLong, int32_t>(PortName);
     break;
   case TYPECODE_TIMED_FLOAT:
       outport = new OutPortWrapper<TimedFloat, float>(PortName);
@@ -108,13 +109,13 @@ int RTnoRTObjectWrapper::AddOutPortWrapper(char TypeCode, const char* PortName)
       outport = new SeqOutPortWrapper<TimedCharSeq, char>(PortName);
     break;
   case TYPECODE_TIMED_OCTET_SEQ:
-      outport = new SeqOutPortWrapper<TimedOctetSeq, char>(PortName);
+      outport = new SeqOutPortWrapper<TimedOctetSeq, int8_t>(PortName);
     break;
   case TYPECODE_TIMED_BOOLEAN_SEQ:
       outport = new SeqOutPortWrapper<TimedBooleanSeq, bool>(PortName);
     break;
   case TYPECODE_TIMED_LONG_SEQ:
-      outport = new SeqOutPortWrapper<TimedLongSeq, long>(PortName);
+      outport = new SeqOutPortWrapper<TimedLongSeq, int32_t>(PortName);
     break;
   case TYPECODE_TIMED_FLOAT_SEQ:
       outport = new SeqOutPortWrapper<TimedFloatSeq, float>(PortName);

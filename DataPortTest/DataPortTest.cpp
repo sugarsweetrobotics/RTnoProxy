@@ -222,7 +222,7 @@ RTC::ReturnCode_t DataPortTest::onExecute(RTC::UniqueId ec_id)
 	std::cout << "Float :" << m_floatIn.data << std::endl;
 	std::cout << "Double:" << m_doubleIn.data << std::endl;
 
-	std::cout << "LongSeq:" << std::endl;
+	std::cout << "LongSeq[" << m_longSeqIn.data.length() << "]:" << std::endl;
 	for(unsigned int i = 0;i < m_longSeqIn.data.length();i++) {
 		std::cout << m_longSeqIn.data[i] << ", ";
 	}

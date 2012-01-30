@@ -20,7 +20,7 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <termio.h>
+#include <termios.h>
 #include <errno.h>
 #include <signal.h>
 #define _POSIX_SOURCE 1
@@ -81,10 +81,10 @@ SerialPort::SerialPort(const char* filename, const int baudrate)
       throw ComOpenException();
     }
     struct termios tio;
-	memset(&tio, 0, sizeof(tio));
-	cfsetspeed(&tio, baudrate);
-	tio.c_cflag |= CS8 | CLOCAL | CREAD;
-	tcsetattr(m_Fd, TCSANOW, &tio);
+    memset(&tio, 0, sizeof(tio));
+    cfsetspeed(&tio, baudrate);
+    tio.c_cflag |= CS8 | CLOCAL | CREAD;
+    tcsetattr(m_Fd, TCSANOW, &tio);
 #endif
 }
 
