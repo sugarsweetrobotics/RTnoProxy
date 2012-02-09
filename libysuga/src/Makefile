@@ -6,7 +6,7 @@ AR=ar
 CFLAGS=-O2 -Wall -fPIC -I../include -c 
 ARFLAGS=rv
 
-OBJECTS=SerialPort.o Socket.o Thread.o Mutex.o 
+OBJECTS=SerialPort.o Socket.o Thread.o Mutex.o DatagramPacket.o DatagramSocket.o
 
 .cpp.o:
 	$(CC) $(CFLAGS) $<

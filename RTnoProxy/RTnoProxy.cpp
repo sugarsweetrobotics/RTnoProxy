@@ -21,7 +21,7 @@ enum {
   CREATED='C',
   INACTIVE='I',
   ACTIVE='A',
-  RTC_ERROR='E',
+  RTCERROR='E',
   NONE='N',
 };
 
@@ -153,11 +153,25 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	}
 
 	unsigned char status = m_pProtocol->GetRTnoStatus();
-
-
+	std::cout << "RTno Status == " << (int)status << std::endl;
+	int ret;
+	switch(status) {
+	case ACTIVE:
+	  if((ret = m_pProtocol->DeactivateRTno()) != 0) {
+	    return RTC::RTC_ERROR;
+	  }
+	  break;
+	case INACTIVE:
+	  break;
+	case RTCERROR:
+	  if((ret = m_pProtocol->ResetRTno()) != 0) {
+	    return RTC::RTC_ERROR;
+	  }
+	  break;
+	}
 
 	unsigned char contextType = m_pProtocol->GetRTnoExecutionContextType();
-	std::cout << "Execution Context Type == " << contextType << std::endl;
+	std::cout << "Execution Context Type == " << (int)contextType << std::endl;
 	switch(contextType) {
 		case ProxySynchronousExecutionContext:
 			std::cout << "--ProxySynchronousExecutionContext detected!" << std::endl;

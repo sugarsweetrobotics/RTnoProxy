@@ -23,7 +23,7 @@
 #define DEACTIVATE 'D'
 #define EXECUTE 'E'
 #define ONERROR 'C'
-#define RESET 'R'
+#define RTNO_RESET 'R'
 #define GET_STATUS 'X'
 #define SEND_DATA 'S'
 #define RECEIVE_DATA 'V'

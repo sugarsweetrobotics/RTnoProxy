@@ -26,6 +26,7 @@ namespace net {
 
 			int ActivateRTno();
 			int DeactivateRTno();
+			int ResetRTno();
 
 			int SendData(const char* portName, const unsigned char* data, int length);
 			int ReceiveData(unsigned char* packet_buffer);

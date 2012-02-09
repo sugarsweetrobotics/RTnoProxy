@@ -136,7 +136,7 @@ int RTnoProtocol::ReceiveReturnCode(unsigned char intf) {
 
 int RTnoProtocol::ActivateRTno()
 {
-  std::cout << "-RTnoProtocol::ActivateRTno() called....";
+  std::cout << "-RTnoProtocol::ActivateRTno() called...." << std::ends;
   m_pTransport->SendPacket(ACTIVATE, 0, NULL);
   int ret = ReceiveReturnCode(ACTIVATE);
   if(ret != RTNO_OK) {
@@ -147,6 +147,18 @@ int RTnoProtocol::ActivateRTno()
   return 0;
 }
 
+int RTnoProtocol::ResetRTno() 
+{
+  std::cout << "-RTnoProtocol::ErrorRTno() called....";
+  m_pTransport->SendPacket(RTNO_RESET, 0, NULL);
+  int ret = ReceiveReturnCode(RTNO_RESET);
+  if(ret != RTNO_OK) {
+    std::cout << "Failed." << std::endl;
+    return ret;
+  }
+  std::cout << "Success." << std::endl;
+  return 0;
+}
 int RTnoProtocol::DeactivateRTno()
 {
   std::cout << "-RTnoProtocol::DeactivateRTno() called....";
