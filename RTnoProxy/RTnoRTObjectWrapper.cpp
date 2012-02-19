@@ -75,6 +75,7 @@ int RTnoRTObjectWrapper::AddInPortWrapper(char TypeCode, const char* PortName)
 	std::pair<std::string, InPortWrapperBase*> portPair(std::string(PortName), inport);
 	m_pRTC->addInPort(PortName, inport->GetPort());
 	m_InPortMap.insert(portPair);
+	m_InPortNameList.push_back(std::string(PortName));
 	std::cout << "Success." << std::endl;
 	return 0;
 }
@@ -129,6 +130,7 @@ int RTnoRTObjectWrapper::AddOutPortWrapper(char TypeCode, const char* PortName)
   std::pair<std::string, OutPortWrapperBase*> portPair(std::string(PortName), outport);
   m_pRTC->addOutPort(PortName, outport->GetPort());
   m_OutPortMap.insert(portPair);
+  m_OutPortNameList.push_back(std::string(PortName));
   std::cout << "Success." << std::endl;
   return 0;
 }

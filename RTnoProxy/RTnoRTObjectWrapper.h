@@ -19,6 +19,8 @@ private:
 private:
 	InPortMap m_InPortMap;
 	OutPortMap m_OutPortMap;
+	std::vector<std::string> m_InPortNameList;
+	std::vector<std::string> m_OutPortNameList;
 
 public:
 	InPortMap* GetInPortMap() {return &m_InPortMap;}
@@ -31,6 +33,14 @@ public:
 public:
 	int AddInPortWrapper(char TypeCode, const char* PortName);
 	int AddOutPortWrapper(char TypeCode, const char* PortName);
+
+	int GetNumInPort() {
+	  return m_InPortMap.size();
+	}
+
+	int GetNumOutPort() {
+	  return m_OutPortMap.size();
+	}
 
 	int AddInPort(PortProfile* profile) {
 		return AddInPortWrapper(profile->GetTypeCode(), profile->GetPortName());
@@ -47,7 +57,14 @@ public:
 	InPortWrapperBase* GetInPort(const char* portName) {
 		return m_InPortMap[portName];
 	}
+	
+	OutPortWrapperBase* GetOutPort(int index) {
+	  return m_OutPortMap[m_OutPortNameList[index].c_str()];
+	}
 
+	InPortWrapperBase* GetInPort(int index) {
+	  return m_InPortMap[m_InPortNameList[index].c_str()];
+	}
 };
 
 	};

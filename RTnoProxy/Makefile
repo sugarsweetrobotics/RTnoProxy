@@ -26,7 +26,7 @@ WRAPPER_FLAGS = --include-dir="" --skel-suffix=Skel --stub-suffix=Stub
 SKEL_OBJ = 
 STUB_OBJ = 
 IMPL_OBJ = 
-OBJS     = RTnoProxy.o RTnoProtocol.o RTnoRTObjectWrapper.o Transport.o EtherTcp.o Serial.o $(SKEL_OBJ) $(STUB_OBJ) $(IMPL_OBJ)
+OBJS     = RTnoProxy.o RTnoProtocol.o RTnoRTObjectWrapper.o Transport.o EtherTcp.o Serial.o PacketBuffer.o $(SKEL_OBJ) $(STUB_OBJ) $(IMPL_OBJ)
 
 LIBS = ../libysuga/lib/libysuga.a
 

@@ -1,5 +1,7 @@
 #pragma once
 
+
+#include "coil/Time.h"
 #include "SerialDevice.h"
 #include "SerialPort.h"
 
@@ -44,7 +46,13 @@ namespace net {
 			 *
 			 */
 			virtual int Write(const void* src, const unsigned int size) {
-				return m_pSerialPort->write(src, size);
+			  //std::cout << "---- Write(Size=" << size << ")" << std::endl;
+			  const unsigned char *pSrc = (const unsigned char*)src;
+			  for(unsigned int i = 0;i < size;i++) {
+			    m_pSerialPort->write(pSrc+i, 1);
+			    coil::usleep(10);
+			  }
+			  return 0;
 			}
 
 			/**

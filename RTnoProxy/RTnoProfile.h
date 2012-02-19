@@ -78,6 +78,24 @@ namespace net {
 				return &m_OutPortProfileList;
 			}
 
+		        uint8_t GetInPortIndex(const char* portName) {
+			        uint8_t i = 0;
+				for(std::list<PortProfile*>::iterator it = m_InPortProfileList.begin(); it != m_InPortProfileList.end(); ++it, i++) {
+					if(strcmp((*it)->GetPortName(), portName) == 0) {
+						return i;
+					}
+				}
+			  
+			}
+
+			uint8_t GetOutPortIndex(const char* portName) {
+      			        uint8_t i = 0;
+			        for(std::list<PortProfile*>::iterator it = m_OutPortProfileList.begin(); it != m_OutPortProfileList.end(); ++it, i++) {
+					if(strcmp((*it)->GetPortName(), portName) == 0) {
+						return i;
+					}
+				}
+			}
 
 			void RemoveInPort(const char* portName) {
 				for(std::list<PortProfile*>::iterator it = m_InPortProfileList.begin(); it != m_InPortProfileList.end(); ++it) {

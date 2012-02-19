@@ -241,17 +241,20 @@ RTC::ReturnCode_t RTnoProxy::onDeactivated(RTC::UniqueId ec_id)
 RTC::ReturnCode_t RTnoProxy::onExecute(RTC::UniqueId ec_id)
 {
 	InPortMap* pInPortMap = m_pRTObjectWrapper->GetInPortMap();
-	for(InPortMapIterator it = pInPortMap->begin();it != pInPortMap->end();++it) {
-		std::string name = (*it).first;
-		InPortWrapperBase* inPort = (*it).second;
+	//	uint8_t i = 0;
+	//	for(InPortMapIterator it = pInPortMap->begin();it != pInPortMap->end();++it, i++) {
+	//		std::string name = (*it).first;
+	//		InPortWrapperBase* inPort = (*it).second;
+	for(int i = 0;i < m_pRTObjectWrapper->GetNumInPort();i++) {
+	  InPortWrapperBase* inPort = m_pRTObjectWrapper->GetInPort(i);
 		if(inPort->isNew()) {
 			unsigned char packet_buffer[MAX_PACKET_SIZE];
 			int len = inPort->Read();
 			inPort->Get(packet_buffer, len);
-			m_pProtocol->SendData(name.c_str(), packet_buffer, len * inPort->getTypeSizeInArduino());
+			m_pProtocol->SendData(i, packet_buffer, len * inPort->getTypeSizeInArduino());
 		}
+		//	}
 	}
-
 	if(this->m_ProxySynchronousExecution) {
 		m_pProtocol->SendExecuteTrigger();
 	}

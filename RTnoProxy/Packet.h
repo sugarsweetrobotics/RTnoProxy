@@ -1,4 +1,3 @@
-
 #ifndef PACKET_HEADER_INCLUDED
 #define PACKET_HEADER_INCLUDED
 
@@ -11,10 +10,16 @@
 #define INVALID_PACKET_DATASIZE  66
 
 // Packet Settings
-#define PACKET_HEADER_SIZE 2
 #define PACKET_INTERFACE 0
 #define DATA_LENGTH 1
-#define DATA_START_ADDR 2
+#define SOURCE_ADDR 2
+#define SOURCE_ADDR_SIZE 4
+#define SOURCE_PORT 6
+#define TARGET_PORT 7
+#define PACKET_HEADER_SIZE 8
+
+
+#define DATA_START_ADDR PACKET_HEADER_SIZE
 
 // Protocol
 // Interface
@@ -29,6 +34,7 @@
 #define RECEIVE_DATA 'V'
 #define GET_PROFILE 'Z'
 #define GET_CONTEXT 'B'
+#define PACKET_ERROR 'F'
 
 
 #define ADD_INPORT 'P'
