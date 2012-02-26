@@ -91,22 +91,22 @@ int Transport::ReceivePacket(unsigned char* packet) {
     return 0;
   }
   
-  if(_Wait(PACKET_HEADER_SIZE) < 0) {
+  if(_Wait(PKT_HEADER_SIZE) < 0) {
     std::cout << "ReceivePacket TIMEOUT. (RxBuffer is not empty but data is smaller than Header)" << std::endl;
-    return -TIMEOUT;
+    return RTNO_RTC_PACKET_TIMEOUT;
   }
-  m_pSerialDevice->Read(packet, PACKET_HEADER_SIZE);
+  m_pSerialDevice->Read(packet, PKT_HEADER_SIZE);
 
-  if(_Wait(packet[DATA_LENGTH]+1) < 0) return -TIMEOUT;
-  m_pSerialDevice->Read(&(packet[PACKET_HEADER_SIZE]), packet[DATA_LENGTH]+1);
-  for(int i = 0;i < PACKET_HEADER_SIZE + packet[DATA_LENGTH];i++) {
+  if(_Wait(packet[PKT_ADDR_DATA_LENGTH]+1) < 0) return -RTNO_RTC_PACKET_TIMEOUT;
+  m_pSerialDevice->Read(&(packet[PKT_HEADER_SIZE]), packet[PKT_ADDR_DATA_LENGTH]+1);
+  for(int i = 0;i < PKT_HEADER_SIZE + packet[PKT_ADDR_DATA_LENGTH];i++) {
     sum += packet[i];
   }
   
-  if(sum != packet[PACKET_HEADER_SIZE+packet[DATA_LENGTH]]) {
+  if(sum != packet[PKT_HEADER_SIZE+packet[PKT_ADDR_DATA_LENGTH]]) {
     std::cout << "CheckSum Error." << std::endl;
-    return -CHECKSUM_ERROR;
+    return RTNO_RTC_CHECKSUM_ERROR;
   }
   
-  return PACKET_HEADER_SIZE + packet[DATA_LENGTH] + 1;
+  return PKT_HEADER_SIZE + packet[PKT_ADDR_DATA_LENGTH] + 1;
 }

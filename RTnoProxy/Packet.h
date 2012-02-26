@@ -1,88 +1,101 @@
+/*******************************************
+ * Packet.h
+ * @author Yuki Suga
+ * @copyright Yuki Suga (ysuga.net) Nov, 10th, 2010.
+ * @license LGPLv3
+ *****************************************/
+
 #ifndef PACKET_HEADER_INCLUDED
 #define PACKET_HEADER_INCLUDED
 
-// Return Values
-#define TIMEOUT 1
-#define DATA_TIMEOUT 2
-#define CHECKSUM_ERROR 3
 
-#define INVALID_PACKET_INTERFACE 65
-#define INVALID_PACKET_DATASIZE  66
 
 // Packet Settings
-#define PACKET_INTERFACE 0
-#define DATA_LENGTH 1
-#define SOURCE_ADDR 2
-#define SOURCE_ADDR_SIZE 4
-#define SOURCE_PORT 6
-#define TARGET_PORT 7
-#define PACKET_HEADER_SIZE 8
+#define PKT_ADDR_INTERFACE 0
+#define PKT_ADDR_DATA_LENGTH 1
+#define PKT_ADDR_SOURCE_ADDR 2
+#define PKT_SOURCE_ADDR_SIZE 4
+#define PKT_ADDR_SOURCE_PORT 6
+#define PKT_ADDR_TARGET_PORT 7
+#define PKT_HEADER_SIZE (2+PKT_SOURCE_ADDR_SIZE+2)
+#define PKT_ADDR_DATA_START_ADDR PKT_HEADER_SIZE
+
+// Return Codes
+#define RTNO_RTC_OK 0
+#define RTNO_RTC_ERROR -1
+#define RTNO_RTC_PRECONDITION_NOT_MET -2
+#define RTNO_RTC_PACKET_TIMEOUT -3
+#define RTNO_RTC_CHECKSUM_ERROR -4
 
 
-#define DATA_START_ADDR PACKET_HEADER_SIZE
+// RTC's state
+#define  RTC_STATE_CREATED 'C'
+#define  RTC_STATE_INACTIVE 'I'
+#define  RTC_STATE_ACTIVE 'A'
+#define  RTC_STATE_ERROR 'E'
+#define  RTC_STATE_NONE 'N'
 
-// Protocol
+
+// DataPort Index Number.
+// In RTno, ControlPort is defined to activate/deactivate/reset,
+// to specify its condition, to request RTnoProfile packet, etc.
+#define CONTROL_PORT_INDEX 0xFE
+#define ALL_PORT_INDEX 0xFF
+
 // Interface
-#define INITIALIZE 'I'
-#define ACTIVATE 'A'
-#define DEACTIVATE 'D'
-#define EXECUTE 'E'
-#define ONERROR 'C'
-#define RTNO_RESET 'R'
-#define GET_STATUS 'X'
-#define SEND_DATA 'S'
-#define RECEIVE_DATA 'V'
-#define GET_PROFILE 'Z'
-#define GET_CONTEXT 'B'
-#define PACKET_ERROR 'F'
+// The first byte of the RTno packet is Interface packet.
+// This defines the packet's job.
 
+// For Error Code
+#define UNKNOWN_INTERFACE 'P'
+#define PACKET_ERROR 'F' // Check sum, timeout, and some error.
 
-#define ADD_INPORT 'P'
-#define ADD_OUTPORT 'Q'
+// For ControlPort
+#define CONTROL_INITIALIZE 'I'
+#define CONTROL_ACTIVATE 'A'
+#define CONTROL_DEACTIVATE 'D'
+#define CONTROL_EXECUTE 'E'
+#define CONTROL_RESET 'R'
+#define CONTROL_GET_PROFILE 'Z'
+#define CONTROL_GET_CONTEXT 'B'
+#define CONTROL_GET_STATUS 'X'
+#define CONTROL_INPORT_CONNECT 'M'
+#define CONTROL_OUTPORT_CONNECT 'N'
+#define CONTROL_INPORT_DISCONNECT 'H'
+#define CONTROL_OUTPORT_DISCONNECT 'J'
 
-#define INPORT_ISNEW 'N'
-#define INPORT_READ  'J'
+// For Data Port Packet
+#define DATAPORT_DATA 'G'
 
-#define RTNO_OK '@'
-#define RTNO_ERROR 'x'
+// For RTno Profile
+#define PROFILE_INPORT 'P'
+#define PROFILE_OUTPORT 'Q'
 
-
-#define OUTPORT_WRITE 'W'
 
 // Communication Settings
-#define PACKET_WAITING_TIME 3000 // ms
-#define PACKET_SENDING_DELAY 10 // us
+#define PACKET_WAITING_TIME 100 // ms
 #define PACKET_WAITING_DELAY 100 //us
 #define PACKET_WAITING_COUNT (PACKET_WAITING_TIME*1000/PACKET_WAITING_DELAY)
 
-#define TYPECODE_TIMED_BOOLEAN 'b'
-#define TYPECODE_TIMED_OCTET 'o'
-#define TYPECODE_TIMED_CHAR  'c'
 
+// Type Codes
+#define TYPECODE_TIMED_BOOLEAN 'b'
+#define TYPECODE_TIMED_CHAR 'c'
+#define TYPECODE_TIMED_OCTET 'o'
 #define TYPECODE_TIMED_LONG 'l'
 #define TYPECODE_TIMED_FLOAT 'f'
 #define TYPECODE_TIMED_DOUBLE 'd'
-
 #define TYPECODE_TIMED_BOOLEAN_SEQ 'B'
-#define TYPECODE_TIMED_OCTET_SEQ 'O'
 #define TYPECODE_TIMED_CHAR_SEQ 'C'
-
+#define TYPECODE_TIMED_OCTET_SEQ 'O'
 #define TYPECODE_TIMED_LONG_SEQ 'L'
 #define TYPECODE_TIMED_FLOAT_SEQ 'F'
 #define TYPECODE_TIMED_DOUBLE_SEQ 'D'
 
-#define MAX_PACKET_SIZE 64
 
-/***********************************************
- *
- **********************************************/
-#define ConnectionTypeSerial1 0x01
-#define ConnectionTypeSerial2 0x02
-#define ConnectionTypeSerial3 0x03
-
+/// To be deleted.
 #define ProxySynchronousExecutionContext 0x21
 #define Timer1ExecutionContext 0x22
 #define Timer2ExecutionContext 0x23
-
 
 #endif

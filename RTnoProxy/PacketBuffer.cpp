@@ -23,19 +23,18 @@ PacketBuffer::PacketBuffer(int8_t interface,
   memcpy(m_Address, address, SOURCE_ADDR_SIZE);
 }
 
-PacketBuffer::PacketBuffer(int8_t* packetBuffer)// :
-  //  this(packetBuffer[0], packetBuffer+2, packetBuffer[6], packetBuffer[7], packetBuffer+8, packetBuffer[1])
+PacketBuffer::PacketBuffer(int8_t* packetBuffer)
 {
-  m_Interface = packetBuffer[PACKET_INTERFACE];
-  m_DataLength = packetBuffer[DATA_LENGTH];
+  m_Interface = packetBuffer[PKT_ADDR_INTERFACE];
+  m_DataLength = packetBuffer[PKT_ADDR_DATA_LENGTH];
   m_pData = NULL;
   if(m_DataLength != 0) {
     m_pData = new int8_t[m_DataLength];
-    memcpy(m_pData, packetBuffer + DATA_START_ADDR, m_DataLength);
+    memcpy(m_pData, packetBuffer + PKT_ADDR_DATA_START_ADDR, m_DataLength);
   }
-  m_TargetPortIndex = packetBuffer[TARGET_PORT];
-  m_SourcePortIndex = packetBuffer[SOURCE_PORT];
-  memcpy(m_Address, packetBuffer + SOURCE_ADDR, SOURCE_ADDR_SIZE);
+  m_TargetPortIndex = packetBuffer[PKT_ADDR_TARGET_PORT];
+  m_SourcePortIndex = packetBuffer[PKT_ADDR_SOURCE_PORT];
+  memcpy(m_Address, packetBuffer + PKT_ADDR_SOURCE_ADDR, SOURCE_ADDR_SIZE);
 
 }
 
@@ -64,5 +63,5 @@ uint8_t PacketBuffer::serialize(int8_t* packetBuffer, uint8_t maxSize)
     memcpy(packetBuffer+8, m_pData, m_DataLength);
   }
   packetBuffer[8+m_DataLength] = sum(packetBuffer, 8+m_DataLength);
-  return PACKET_HEADER_SIZE + m_DataLength + 1; // +1 is checksum
+  return PKT_HEADER_SIZE + m_DataLength + 1; // +1 is checksum
 }

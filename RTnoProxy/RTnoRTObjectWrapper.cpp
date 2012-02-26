@@ -1,14 +1,5 @@
 #include "stdafx.h"
 
-/*
-#include <rtm/Manager.h>
-#include <rtm/CorbaPort.h>
-#include <rtm/DataInPort.h>
-#include <rtm/DataOutPort.h>
-
-#include <rtm/idl/BasicDataType.hh>
-*/
-
 #include <stdint.h>
 #include "RTnoRTObjectWrapper.h"
 
@@ -19,7 +10,7 @@ using namespace net::ysuga;
 
 RTnoRTObjectWrapper::RTnoRTObjectWrapper(RTC::DataFlowComponentBase* pRTC)
 {
-	m_pRTC = pRTC;
+  m_pRTC = pRTC;
 }
 
 RTnoRTObjectWrapper::~RTnoRTObjectWrapper(void)
@@ -30,54 +21,54 @@ RTnoRTObjectWrapper::~RTnoRTObjectWrapper(void)
 
 int RTnoRTObjectWrapper::AddInPortWrapper(char TypeCode, const char* PortName)
 {
-	std::cout << "AddInPort(" << TypeCode << ", " << PortName << ")" << std::endl;
-	InPortWrapperBase* inport;
-	switch(TypeCode) {
-	case TYPECODE_TIMED_CHAR:
-	  inport = new InPortWrapper<TimedChar, char>(PortName);
-	  break;
-	case TYPECODE_TIMED_OCTET:
-	  inport = new InPortWrapper<TimedOctet, int8_t>(PortName);
-	  break;
-	case TYPECODE_TIMED_BOOLEAN:
-	  inport = new InPortWrapper<TimedBoolean, bool>(PortName);
-	  break;
-	case TYPECODE_TIMED_LONG:
-	  inport = new InPortWrapper<TimedLong, int32_t>(PortName);
-	break;
-	case TYPECODE_TIMED_FLOAT:
-	  inport = new InPortWrapper<TimedFloat, float>(PortName);
-	break;
-	case TYPECODE_TIMED_DOUBLE:
-	  inport = new InPortWrapper<TimedDouble, double>(PortName);
-	break;
-	case TYPECODE_TIMED_CHAR_SEQ:
-	  inport = new SeqInPortWrapper<TimedCharSeq, char>(PortName);
-	  break;
-	case TYPECODE_TIMED_OCTET_SEQ:
-	  inport = new SeqInPortWrapper<TimedOctetSeq, int8_t>(PortName);
-	  break;
-	case TYPECODE_TIMED_BOOLEAN_SEQ:
-	  inport = new SeqInPortWrapper<TimedBooleanSeq, bool>(PortName);  
-	  break;
-	case TYPECODE_TIMED_LONG_SEQ:
-	  inport = new SeqInPortWrapper<TimedLongSeq, int32_t>(PortName);
-	break;
-	case TYPECODE_TIMED_FLOAT_SEQ:
-	  inport = new SeqInPortWrapper<TimedFloatSeq, float>(PortName);
-	break;
-	case TYPECODE_TIMED_DOUBLE_SEQ:
-	  inport = new SeqInPortWrapper<TimedDoubleSeq, double>(PortName);
-	break;
-	default:
-	return -1;
-	}
-	std::pair<std::string, InPortWrapperBase*> portPair(std::string(PortName), inport);
-	m_pRTC->addInPort(PortName, inport->GetPort());
-	m_InPortMap.insert(portPair);
-	m_InPortNameList.push_back(std::string(PortName));
-	std::cout << "Success." << std::endl;
-	return 0;
+  std::cout << "AddInPort(" << TypeCode << ", " << PortName << ")" << std::endl;
+  InPortWrapperBase* inport;
+  switch(TypeCode) {
+  case TYPECODE_TIMED_CHAR:
+    inport = new InPortWrapper<TimedChar, char>(PortName);
+    break;
+  case TYPECODE_TIMED_OCTET:
+    inport = new InPortWrapper<TimedOctet, int8_t>(PortName);
+    break;
+  case TYPECODE_TIMED_BOOLEAN:
+    inport = new InPortWrapper<TimedBoolean, bool>(PortName);
+    break;
+  case TYPECODE_TIMED_LONG:
+    inport = new InPortWrapper<TimedLong, int32_t>(PortName);
+    break;
+  case TYPECODE_TIMED_FLOAT:
+    inport = new InPortWrapper<TimedFloat, float>(PortName);
+    break;
+  case TYPECODE_TIMED_DOUBLE:
+    inport = new InPortWrapper<TimedDouble, double>(PortName);
+    break;
+  case TYPECODE_TIMED_CHAR_SEQ:
+    inport = new SeqInPortWrapper<TimedCharSeq, char>(PortName);
+    break;
+  case TYPECODE_TIMED_OCTET_SEQ:
+    inport = new SeqInPortWrapper<TimedOctetSeq, int8_t>(PortName);
+    break;
+  case TYPECODE_TIMED_BOOLEAN_SEQ:
+    inport = new SeqInPortWrapper<TimedBooleanSeq, bool>(PortName);  
+    break;
+  case TYPECODE_TIMED_LONG_SEQ:
+    inport = new SeqInPortWrapper<TimedLongSeq, int32_t>(PortName);
+    break;
+  case TYPECODE_TIMED_FLOAT_SEQ:
+    inport = new SeqInPortWrapper<TimedFloatSeq, float>(PortName);
+    break;
+  case TYPECODE_TIMED_DOUBLE_SEQ:
+    inport = new SeqInPortWrapper<TimedDoubleSeq, double>(PortName);
+    break;
+  default:
+    return -1;
+  }
+  std::pair<std::string, InPortWrapperBase*> portPair(std::string(PortName), inport);
+  m_pRTC->addInPort(PortName, inport->GetPort());
+  m_InPortMap.insert(portPair);
+  m_InPortNameList.push_back(std::string(PortName));
+  std::cout << "Success." << std::endl;
+  return 0;
 }
 
 

@@ -27,20 +27,23 @@ namespace net {
       int ActivateRTno();
       int DeactivateRTno();
       int ResetRTno();
+
+      int ConnectInPort(const char* sourceAddr, const uint8_t sourcePort, const char* targetAddress, const uint8_t targetPort);
+      int ConnectOutPort(const char* sourceAddr, const uint8_t sourcePort, const char* targetAddress, const uint8_t targetPort);
       
-      //int SendData(const char* portName, const unsigned char* data, int length);
       int SendData(const uint8_t index, const unsigned char* data, int length);
-      //      int ReceiveData(unsigned char* packet_buffer);
       int ReceiveData(PacketBuffer * packet);
       int SendExecuteTrigger();
       
       int ReceiveReturnCode(unsigned char intf);
       
       int HandleReceivedPacket(void);
-		private:
-			std::string GetStringFromPacket(const int8_t* start_adr, int length);
-			void SendRequest(int8_t interface);
-		};
 
-	};
+
+    private:
+      std::string GetStringFromPacket(const int8_t* start_adr, int length);
+      void SendRequest(int8_t interface);
+    };
+    
+  };
 };
