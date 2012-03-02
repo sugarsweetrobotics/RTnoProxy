@@ -195,6 +195,7 @@ RTC::ReturnCode_t RTnoProxy::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t RTnoProxy::onActivated(RTC::UniqueId ec_id)
 {
+
 	int ret;
 	if((ret = m_pProtocol->ActivateRTno()) == 0) {
 		
