@@ -17,6 +17,8 @@ namespace net {
 			}
 
 		public:
+
+			virtual void ReceivePacket() {}
 			/**
 			 * @brief flush receive buffer.
 			 * @return zero if success.

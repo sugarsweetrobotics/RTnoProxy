@@ -123,11 +123,6 @@ int RTnoProtocol::ReceiveReturnCode(unsigned char intf) {
 	std::cout << "ConnectOutPort OK." << std::endl;
       }
       break;
-      
-      //    case SEND_DATA
-      //n      m_SendBusy = FALSE;
-      //continue;
-      //    case RECEIVE_DATA: {
     case DATAPORT_DATA: {
       OutPortWrapperBase* outPort = m_pRTObjectWrapper->GetOutPort(packet->getSourcePortIndex());
       if(outPort == NULL) {
@@ -191,6 +186,7 @@ int RTnoProtocol::ConnectInPort(const char* sourceAddr, const uint8_t sourcePort
   buffer[0] = sourcePort;
   memcpy(buffer+1, targetAddress, PKT_SOURCE_ADDR_SIZE);
   buffer[1+PKT_SOURCE_ADDR_SIZE] = targetPort;
+  
   PacketBuffer packet(CONTROL_INPORT_CONNECT, (int8_t*)"UART", CONTROL_PORT_INDEX, CONTROL_PORT_INDEX, buffer, 2+PKT_SOURCE_ADDR_SIZE);
   m_pTransport->SendPacket((char*)sourceAddr, &packet);
   return 0;

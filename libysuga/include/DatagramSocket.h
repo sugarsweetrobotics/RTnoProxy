@@ -3,6 +3,8 @@
 #include <sys/types.h>
 
 #include "DatagramPacket.h"
+namespace net {
+  namespace ysuga {
 class DatagramSocket {
  private:
   int m_Socket;
@@ -15,6 +17,10 @@ class DatagramSocket {
 
 
  public:
-  void send(DatagramPacket* pPacket);
-  DatagramPacket* receive(DatagramPacket* pPacket);
+  void send(net::ysuga::DatagramPacket* pPacket);
+  net::ysuga::DatagramPacket* receive(void);
+};
+
+  }
+
 };

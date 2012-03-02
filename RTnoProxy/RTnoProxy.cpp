@@ -15,6 +15,7 @@
 #include "Packet.h"
 
 #include "EtherTcp.h"
+#include "EtherUdp.h"
 #include "Serial.h"
 
 
@@ -92,6 +93,14 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
       return RTC::RTC_ERROR;
     }
     
+  } else if(m_connectionType == "udp") {
+    try {
+      std::cout << "Connecting to " << m_ipAddress << ":" << m_portNumber << " with UDP" << std::ends;
+      m_pSerialDevice = new EtherUdp(m_ipAddress.c_str(), m_portNumber);
+    } catch (...) {
+      std::cout << "Failed." << std::endl;
+      return RTC::RTC_ERROR;
+    }
   }
   m_pTransport = new Transport(m_pSerialDevice);
   m_pRTObjectWrapper = new RTnoRTObjectWrapper(this);
@@ -112,16 +121,17 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
   m_pProtocol->GetRTnoProfile(&m_Profile); 
   PortList* pInPortList = m_Profile.GetInPortList();
   int i = 0;
+  char target[4] = {1, 1, 1, 1,};
   for(PortListIterator it = pInPortList->begin();it != pInPortList->end();++it) {
     m_pRTObjectWrapper->AddInPort((*it));
-    m_pProtocol->ConnectInPort("UART", i, "UART", i);
+    m_pProtocol->ConnectInPort("UART", i, target, i);
     i++;
   }
   PortList* pOutPortList = m_Profile.GetOutPortList();
   i = 0;
   for(PortListIterator it = pOutPortList->begin();it != pOutPortList->end();++it) {
     m_pRTObjectWrapper->AddOutPort((*it));
-    m_pProtocol->ConnectOutPort("UART", i, "UART", i);
+    m_pProtocol->ConnectOutPort("UART", i, target, i);
     i++;
   }
   

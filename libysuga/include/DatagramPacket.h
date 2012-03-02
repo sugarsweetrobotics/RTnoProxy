@@ -1,8 +1,14 @@
 #pragma once
+
+#include "libysuga.h"
 #include <stdint.h>
 #include <sys/types.h>
+#include <netinet/in.h>
 
-class DatagramPacket {
+
+namespace net {
+  namespace ysuga {
+class LIBYSUGA_API DatagramPacket {
  private:
   struct sockaddr_in m_Address;
   uint8_t* m_pData;
@@ -19,3 +25,5 @@ class DatagramPacket {
   struct sockaddr* getAddress() {return (struct sockaddr*)&m_Address;}
   uint32_t getAddressSize() {return sizeof(m_Address); }
 };
+  }
+}

@@ -78,6 +78,7 @@ int Transport::IsReceived() {
 PacketBuffer *Transport::ReceivePacket() {
   int8_t packetBuffer[256];
   int ret = ReceivePacket((unsigned char*)packetBuffer);
+
   if(ret == 0) return NULL;
   if(ret < 0) return NULL;
   delete m_pPacketBuffer;
@@ -87,6 +88,8 @@ PacketBuffer *Transport::ReceivePacket() {
 
 int Transport::ReceivePacket(unsigned char* packet) {
   unsigned char sum = 0;
+  
+  m_pSerialDevice->ReceivePacket();
   if(m_pSerialDevice->GetSizeInRxBuffer() == 0) {
     return 0;
   }
@@ -105,6 +108,7 @@ int Transport::ReceivePacket(unsigned char* packet) {
   
   if(sum != packet[PKT_HEADER_SIZE+packet[PKT_ADDR_DATA_LENGTH]]) {
     std::cout << "CheckSum Error." << std::endl;
+  std::cout << "--debug interface == " << packet[0] << std::endl;
     return RTNO_RTC_CHECKSUM_ERROR;
   }
   

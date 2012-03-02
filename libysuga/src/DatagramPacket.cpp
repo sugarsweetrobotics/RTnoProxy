@@ -7,6 +7,7 @@
 #include <string.h>
 #include "DatagramPacket.h"
 
+using namespace net::ysuga;
 
 DatagramPacket::DatagramPacket(uint8_t* sendData, uint32_t length, char* address, uint16_t port)
 {
