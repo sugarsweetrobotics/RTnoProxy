@@ -1,4 +1,4 @@
-set(comp_srcs RTnoProxy.cpp )
+set(comp_srcs RTnoProxy.cpp RTnoRTObjectWrapper.cpp RTnoProtocol.cpp Mutex.cpp EtherTcp.cpp SerialPort.cpp Socket.cpp Transport.cpp Thread.cpp ServerSocket.cpp Serial.cpp)
 set(standalone_srcs RTnoProxyComp.cpp)
 
 if (DEFINED OPENRTM_INCLUDE_DIRS)
