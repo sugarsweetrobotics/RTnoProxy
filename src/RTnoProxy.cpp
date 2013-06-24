@@ -9,28 +9,16 @@
 
 #include "stdafx.h"
 #include "RTnoProxy.h"
-#include "InPortWrapper.h"
-#include <coil/Time.h>
-
-#include "Packet.h"
-
 #include "EtherTcp.h"
 #include "Serial.h"
 
-enum {
-  CREATED='C',
-  INACTIVE='I',
-  ACTIVE='A',
-  RTCERROR='E',
-  NONE='N',
-};
 
 
 
 // Module specification
 // <rtc-template block="module_spec">
 
-using namespace net::ysuga;
+
 
 static const char* rtno_spec[] =
   {
@@ -107,28 +95,24 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	if(m_connectionType == "serial") {
 		try {
 			std::cout << "Opening SerialPort(" << m_comport << ")....." << std::ends;
-			m_pSerialDevice = new Serial(m_comport.c_str(), m_baudrate);
-		} catch (ComOpenException & e) {
+			m_pSerialDevice = new net::ysuga::Serial(m_comport.c_str(), m_baudrate);
+		} catch (net::ysuga::ComOpenException & e) {
 			std::cout << "Fail(" << e.what() << ")" << std::endl;
 			return RTC::RTC_ERROR;
 		}
 	} else if(m_connectionType == "tcp") {
 		try {
 			std::cout << "Connecting to " << m_ipAddress << ":" << m_portNumber << " with TCP" << std::ends;
-			m_pSerialDevice = new EtherTcp(m_ipAddress.c_str(), m_portNumber);
+			m_pSerialDevice = new net::ysuga::EtherTcp(m_ipAddress.c_str(), m_portNumber);
+
 		} catch (...) {
 			std::cout << "Fail" << std::endl;
 			return RTC::RTC_ERROR;
 		}
 
 	}
-	//  m_pSerialPort = new SerialPort(m_comport.c_str(), m_baudrate);
-	//m_pTransport = new UARTTransport(m_comport.c_str(), m_baudrate);
-	//m_pTransport = new EtherTcpTransport("192.168.42.100", 23);
-	m_pTransport = new Transport(m_pSerialDevice);
-	m_pRTObjectWrapper = new RTnoRTObjectWrapper(this);
-	m_pProtocol = new RTnoProtocol(m_pRTObjectWrapper, m_pTransport);
-	//m_pProfile  = new RTnoProfile();
+	
+	m_pRTno = new ssr::RTnoBase(this, m_pSerialDevice);
 	
 	std::cout << "OK." << std::endl;
 
@@ -141,58 +125,20 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	std::cout << "Go!"     << std::endl;
 
 	std::cout << "Starting up onInitialize sequence." << std::endl;
-
-	m_pProtocol->GetRTnoProfile(&m_Profile); 
-	PortList* pInPortList = m_Profile.GetInPortList();
-	for(PortListIterator it = pInPortList->begin();it != pInPortList->end();++it) {
-		m_pRTObjectWrapper->AddInPort((*it));
+	
+	if (!m_pRTno->initialize()) {
+	  return RTC::RTC_ERROR;
 	}
-	PortList* pOutPortList = m_Profile.GetOutPortList();
-	for(PortListIterator it = pOutPortList->begin();it != pOutPortList->end();++it) {
-		m_pRTObjectWrapper->AddOutPort((*it));
-	}
-
-	unsigned char status = m_pProtocol->GetRTnoStatus();
-	std::cout << "RTno Status == " << (int)status << std::endl;
-	int ret;
-	switch(status) {
-	case ACTIVE:
-	  if((ret = m_pProtocol->DeactivateRTno()) != 0) {
-	    return RTC::RTC_ERROR;
-	  }
-	  break;
-	case INACTIVE:
-	  break;
-	case RTCERROR:
-	  if((ret = m_pProtocol->ResetRTno()) != 0) {
-	    return RTC::RTC_ERROR;
-	  }
-	  break;
-	}
-
-	unsigned char contextType = m_pProtocol->GetRTnoExecutionContextType();
-	std::cout << "Execution Context Type == " << (int)contextType << std::endl;
-	switch(contextType) {
-		case ProxySynchronousExecutionContext:
-			std::cout << "--ProxySynchronousExecutionContext detected!" << std::endl;
-			this->m_ProxySynchronousExecution = true;
-			break;
-		default:
-			m_ProxySynchronousExecution = false;
-	}
-
-	std::cout << "onInitialized OK." << std::endl;
 
 	return RTC::RTC_OK;
 }
 
 RTC::ReturnCode_t RTnoProxy::onFinalize()
 {
-	delete m_pProtocol;
-	//delete m_pProfile;
-	delete m_pTransport;
-	delete m_pSerialDevice;
-	return RTC::RTC_OK;
+  delete m_pRTno;
+  m_pRTno = NULL;
+
+  return RTC::RTC_OK;
 }
 
 
@@ -213,69 +159,29 @@ RTC::ReturnCode_t RTnoProxy::onShutdown(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t RTnoProxy::onActivated(RTC::UniqueId ec_id)
 {
-	int ret;
-	if((ret = m_pProtocol->ActivateRTno()) == 0) {
-		
-		return RTC::RTC_OK;
-	}
+  if(!m_pRTno->activate()) {
+    return RTC::RTC_ERROR;
+  }
 
-	std::cout << "onActivated failed." << std::endl;
-	std::cout << " -- Error Code is " << ret << std::endl;
-	return RTC::RTC_ERROR;	
+  return RTC::RTC_OK;
 }
 
 
 RTC::ReturnCode_t RTnoProxy::onDeactivated(RTC::UniqueId ec_id)
 {
-	int ret;
-	if((ret = m_pProtocol->DeactivateRTno()) == 0) {
-		return RTC::RTC_OK;
-	}
+  if(!m_pRTno->deactivate()) {
+    return RTC::RTC_ERROR;
+  }
 
-	std::cout << "onDeactivated failed." << std::endl;
-	std::cout << " -- Error Code is " << ret << std::endl;
-	return RTC::RTC_ERROR;	
+  return RTC::RTC_OK;
 }
 
 
 RTC::ReturnCode_t RTnoProxy::onExecute(RTC::UniqueId ec_id)
 {
-	InPortMap* pInPortMap = m_pRTObjectWrapper->GetInPortMap();
-	for(InPortMapIterator it = pInPortMap->begin();it != pInPortMap->end();++it) {
-		std::string name = (*it).first;
-		InPortWrapperBase* inPort = (*it).second;
-		if(inPort->isNew()) {
-			unsigned char packet_buffer[MAX_PACKET_SIZE];
-			int len = inPort->Read();
-			inPort->Get(packet_buffer, len);
-			m_pProtocol->SendData(name.c_str(), packet_buffer, len * inPort->getTypeSizeInArduino());
-		}
-	}
-
-	if(this->m_ProxySynchronousExecution) {
-		m_pProtocol->SendExecuteTrigger();
-	}
-
-
-	while(1) {
-		int ret = m_pProtocol->HandleReceivedPacket();
-		if(ret == 0) { // No Data Received.
-			if(m_ProxySynchronousExecution) {
-				continue; // if ProxySynchronousExecution, wait for EXECUTE packet.
-			}
-			break;
-		}
-
-		if(ret < 0) {
-			std::cout << "--RTnoProxy::OnExecute() failed (error code = " << ret << ")" << std::endl;
-			return RTC::RTC_ERROR;
-		}
-
-		if(ret == EXECUTE && m_ProxySynchronousExecution) {
-			break;
-		}
-	}
-
+  if(!m_pRTno->execute()) {
+    return RTC::RTC_ERROR;
+  }
   return RTC::RTC_OK;
 }
 
@@ -295,6 +201,9 @@ RTC::ReturnCode_t RTnoProxy::onError(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t RTnoProxy::onReset(RTC::UniqueId ec_id)
 {
+  if(!m_pRTno->reset()) {
+    return RTC::RTC_ERROR;
+  }
   return RTC::RTC_OK;
 }
 

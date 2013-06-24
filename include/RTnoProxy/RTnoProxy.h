@@ -36,11 +36,15 @@
 
 
 //#include "SerialPort.h"
-#include "RTnoRTObjectWrapper.h"
-#include "RTnoProtocol.h"
-#include "Transport.h"
 
 using namespace RTC;
+#include "RTnoBase.h"
+
+namespace net {
+  namespace ysuga {
+    class SerialDevice;
+  }
+}
 
 /*!
  * @class RTnoProxy
@@ -276,14 +280,10 @@ class RTnoProxy
   std::string m_ipAddress;
   int m_portNumber;
 
-  net::ysuga::Transport* m_pTransport;
-  net::ysuga::RTnoProtocol* m_pProtocol;
   net::ysuga::SerialDevice *m_pSerialDevice;
-  net::ysuga::RTnoProfile m_Profile;
 
-  net::ysuga::RTnoRTObjectWrapper *m_pRTObjectWrapper;
+  ssr::RTnoBase *m_pRTno;
 
-  bool m_ProxySynchronousExecution;
 };
 
 

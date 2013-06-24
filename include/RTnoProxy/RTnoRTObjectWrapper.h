@@ -2,7 +2,14 @@
 
 #include <map>
 
+namespace RTC {
+  class DataFlowComponentBase;
+}
+
 #include "RTnoProfile.h"
+
+#include "InPortWrapper.h"
+#include "OutPortWrapper.h"
 
 typedef std::map<std::string, InPortWrapperBase*> InPortMap;
 typedef std::map<std::string, InPortWrapperBase*>::iterator InPortMapIterator;
