@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 #include "SerialDevice.h"
 
 namespace net {
@@ -19,7 +20,7 @@ namespace net {
 		public:
 			int SendPacket(unsigned char interFace, unsigned char size, unsigned char* packet_buffer);
 
-			int ReceivePacket(unsigned char* packet);
+			int ReceivePacket(uint8_t* packet);
 
 			int IsReceived();
 		private:

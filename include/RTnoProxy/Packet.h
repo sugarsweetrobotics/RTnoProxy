@@ -40,6 +40,7 @@
 #define RTNO_OK '@'
 #define RTNO_ERROR 'x'
 
+#define PACKET_ERROR 'F'
 
 #define OUTPORT_WRITE 'W'
 

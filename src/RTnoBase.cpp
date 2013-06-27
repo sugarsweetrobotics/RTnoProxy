@@ -44,6 +44,8 @@ RTnoBase::~RTnoBase()
 bool RTnoBase::initialize()
 {
   m_pProtocol->GetRTnoProfile(&m_Profile); 
+
+  std::cout << "-Parsing RTnoProfile." << std::endl;
   PortList* pInPortList = m_Profile.GetInPortList();
   for(PortListIterator it = pInPortList->begin();it != pInPortList->end();++it) {
     m_pRTObjectWrapper->AddInPort((*it));
@@ -52,6 +54,7 @@ bool RTnoBase::initialize()
   for(PortListIterator it = pOutPortList->begin();it != pOutPortList->end();++it) {
     m_pRTObjectWrapper->AddOutPort((*it));
   }
+  std::cout << "-Success." << std::endl;
   
   unsigned char status = m_pProtocol->GetRTnoStatus();
   std::cout << "RTno Status == " << (int)status << std::endl;
@@ -83,7 +86,7 @@ bool RTnoBase::initialize()
   }
   
   std::cout << "onInitialized OK." << std::endl;
-  return RTC::RTC_OK;
+  return true;
 }
 
 
