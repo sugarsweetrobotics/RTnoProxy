@@ -120,17 +120,56 @@ bool RTnoBase::deactivate()
 
 bool RTnoBase::execute()
 {
+  std::cout << "RTnoBase::execute()" << std::endl;
+
+  while(m_pProtocol->IsSendBusy()) {
+    int ret = m_pProtocol->HandleReceivedPacket();
+    std::cout << "ret = " << ret << std::endl;
+    if(ret == 0) { // No Data Received.
+      break;
+    }
+
+    
+    
+    if(ret < 0) {
+      std::cout << "--RTnoProxy::OnExecute() failed (error code = " << ret << ")" << std::endl;
+      return false;
+    }
+    
+  }
+
+
+
   InPortMap* pInPortMap = m_pRTObjectWrapper->GetInPortMap();
   for(InPortMapIterator it = pInPortMap->begin();it != pInPortMap->end();++it) {
     std::string name = (*it).first;
     InPortWrapperBase* inPort = (*it).second;
+
     if(inPort->isNew()) {
+        std::cout << "-reading InPort:" << name << std::endl;
+      std::cout << "--received." << std::endl;
       unsigned char packet_buffer[MAX_PACKET_SIZE];
       int len = inPort->Read();
       inPort->Get(packet_buffer, len);
       m_pProtocol->SendData(name.c_str(), packet_buffer, len * inPort->getTypeSizeInArduino());
     }
   }
+
+
+  while(1) {
+    int ret = m_pProtocol->HandleReceivedPacket();
+    std::cout << "ret = " << ret << std::endl;
+    if(ret == 0) { // No Data Received.
+      break;
+    }
+    
+    if(ret < 0) {
+      std::cout << "--RTnoProxy::OnExecute() failed (error code = " << ret << ")" << std::endl;
+      return false;
+    }
+    
+  }
+ 
   
   if(this->m_ProxySynchronousExecution) {
     m_pProtocol->SendExecuteTrigger();
@@ -146,7 +185,12 @@ bool RTnoBase::execute()
       break;
     }
     
+    
     if(ret < 0) {
+      if (ret == -TIMEOUT) {
+	std::cout << "--RTnoProxy::onExecute() timeout." << std::endl;
+	continue;
+      }
       std::cout << "--RTnoProxy::OnExecute() failed (error code = " << ret << ")" << std::endl;
       return false;
     }

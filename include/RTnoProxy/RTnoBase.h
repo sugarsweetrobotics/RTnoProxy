@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Thread.h"
 #include "RTnoProfile.h"
 
 namespace net {
@@ -19,7 +20,7 @@ namespace RTC {
 namespace ssr {
 
 
-  class RTnoBase {
+  class RTnoBase : public net::ysuga::Thread {
   private:
     net::ysuga::SerialDevice *m_pSerialDevice;
     net::ysuga::RTnoProfile m_Profile;
@@ -32,6 +33,9 @@ namespace ssr {
     RTnoBase(RTC::DataFlowComponentBase* pRTC, net::ysuga::SerialDevice* pSerial);
 
     virtual ~RTnoBase();
+
+
+    virtual void Run(){}
     
     bool initialize();
 

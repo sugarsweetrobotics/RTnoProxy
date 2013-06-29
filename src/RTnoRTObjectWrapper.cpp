@@ -42,7 +42,9 @@ RTnoRTObjectWrapper::~RTnoRTObjectWrapper(void)
 
 int RTnoRTObjectWrapper::AddInPortWrapper(char TypeCode, const char* PortName)
 {
-	std::cout << "--AddInPort(" << TypeCode << ", " << PortName << ")" << std::endl;
+#ifdef DEBUG
+  std::cout << "-RTnoRTObjectWrapper::AddInPortWrapper(" << TypeCode << ", " << PortName << ")" << std::endl;
+#endif
 	InPortWrapperBase* inport;
 	switch(TypeCode) {
 	case TYPECODE_TIMED_CHAR:
@@ -87,7 +89,9 @@ int RTnoRTObjectWrapper::AddInPortWrapper(char TypeCode, const char* PortName)
 	std::pair<std::string, InPortWrapperBase*> portPair(std::string(PortName), inport);
 	m_pRTC->addInPort(PortName, inport->GetPort());
 	m_InPortMap.insert(portPair);
+#ifdef DEBUG
 	std::cout << "---Success." << std::endl;
+#endif
 	return 0;
 }
 
@@ -96,7 +100,9 @@ int RTnoRTObjectWrapper::AddInPortWrapper(char TypeCode, const char* PortName)
 
 int RTnoRTObjectWrapper::AddOutPortWrapper(char TypeCode, const char* PortName)
 {
-  std::cout << "--AddOutPort(" << TypeCode << ", " << PortName << ")" << std::endl;
+#ifdef DEBUG
+  std::cout << "-RTnoRTObjectWrapper::AddOutPortWrapper(" << TypeCode << ", " << PortName << ")" << std::endl;
+#endif
   OutPortWrapperBase * outport;
   switch(TypeCode) {
   case TYPECODE_TIMED_CHAR:
@@ -141,6 +147,8 @@ int RTnoRTObjectWrapper::AddOutPortWrapper(char TypeCode, const char* PortName)
   std::pair<std::string, OutPortWrapperBase*> portPair(std::string(PortName), outport);
   m_pRTC->addOutPort(PortName, outport->GetPort());
   m_OutPortMap.insert(portPair);
+#ifdef DEBUG
   std::cout << "---Success." << std::endl;
+#endif
   return 0;
 }

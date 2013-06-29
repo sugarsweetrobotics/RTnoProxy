@@ -16,6 +16,8 @@ namespace net {
 			Transport *m_pTransport;
 			RTnoRTObjectWrapper *m_pRTObjectWrapper;
 		public:
+
+			int IsSendBusy() {return m_SendBusy;}
 			RTnoProtocol(RTnoRTObjectWrapper *pRTObject, Transport* pTransport);
 			virtual ~RTnoProtocol(void);
 

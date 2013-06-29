@@ -50,8 +50,9 @@ int RTnoProtocol::GetRTnoProfile(RTnoProfile *profile)
       std::cout << "--Packet Receive Failed." << std::endl;
       return -1;
     }
-
+#ifdef DEBUG
     std::cout << "--Packet Received." << std::endl;
+#endif
     
     std::string strbuf;
     switch(packet_buffer[PACKET_INTERFACE]) {
@@ -65,11 +66,14 @@ int RTnoProtocol::GetRTnoProfile(RTnoProfile *profile)
       }
       break;
     case ADD_INPORT: 
+
       strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
+      std::cout << "--RTnoProtocol::AddInPort(" << strbuf << ":type_code=" << packet_buffer[DATA_START_ADDR] << std::endl;
       profile->AddInPort(packet_buffer[DATA_START_ADDR], strbuf.c_str());
       break;
     case ADD_OUTPORT:
       strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
+      std::cout << "--RTnoProtocol::AddOutPort(" << strbuf << ":type_code=" << packet_buffer[DATA_START_ADDR] << std::endl;
       profile->AddOutPort(packet_buffer[DATA_START_ADDR], strbuf.c_str());
       break;
     case PACKET_ERROR:
@@ -107,14 +111,18 @@ int RTnoProtocol::ReceiveReturnCode(unsigned char intf) {
 	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
 	while(1) {
+	  if (m_SendBusy) {
+	    // if timeout, m_SendBusy = false;
+	  }
+
 		int ret = m_pTransport->ReceivePacket(packet_buffer);
 		if(ret == 0) continue;
 		if(ret == -TIMEOUT) {
 			std::cout << "---Timeout Error." << std::endl;
-			return -1; // Timeout or Checksum error.
+			return -TIMEOUT; // Timeout or Checksum error.
 		} else if(ret == -CHECKSUM_ERROR) {
 			std::cout << "---Checksum Error." << std::endl;
-			return -1;
+			return -CHECKSUM_ERROR;
 		}
 
 		if(packet_buffer[PACKET_INTERFACE] == SEND_DATA) {
@@ -187,7 +195,7 @@ int RTnoProtocol::SendData(const char* portName, const unsigned char* data, int 
 		coil::TimeValue tv(1000.0); // 1 ms;
 		coil::sleep(tv);
 	}
-	//std::cout << "-RTnoProtocol::SendData() called."<< std::endl;
+	std::cout << "-RTnoProtocol::SendData(" << portName << ") called."<< std::endl;
 	unsigned char packet_buffer[MAX_PACKET_SIZE];
 
 	int namelen = strlen(portName);
@@ -223,7 +231,7 @@ int RTnoProtocol::SendData(const char* portName, const unsigned char* data, int 
 
 int RTnoProtocol::SendExecuteTrigger(void)
 {
-	return m_pTransport->SendPacket(EXECUTE, 0, NULL);
+  return m_pTransport->SendPacket(EXECUTE, 0, NULL);
 }
 
 int RTnoProtocol::ReceiveData(unsigned char* packet_buffer) 
@@ -247,16 +255,22 @@ int RTnoProtocol::ReceiveData(unsigned char* packet_buffer)
 int RTnoProtocol::HandleReceivedPacket(void)
 {
 	unsigned char packet_buffer[MAX_PACKET_SIZE];
-	int ret = m_pTransport->ReceivePacket(packet_buffer);
+	int ret = m_pTransport->ReceivePacket(packet_buffer, 10*1000);
 	if(ret == 0) return 0;
 	else if(ret < 0) {
-		return -1;
-	}
-
-	if(packet_buffer[PACKET_INTERFACE] == RECEIVE_DATA) {
-		ReceiveData(packet_buffer);
+	  if (ret == -CHECKSUM_ERROR) {
+	    //return 0;
+	  }
+	  std::cout << "-RTnoProtocol::HandleReceivedPacket() failed: ret-" << ret << std::endl;
+	  return ret;
 	}
 	
+	//if(packet_buffer[PACKET_INTERFACE] == RECEIVE_DATA) {
+	//	ReceiveData(packet_buffer);
+	//}
+	
+	//std::cout << "--RTnoProtocol::HandleReceivePacket() received:" << packet_buffer[PACKET_INTERFACE] << std::endl;
+
 	switch(packet_buffer[PACKET_INTERFACE]) {
 	case RECEIVE_DATA:
 		ReceiveData(packet_buffer);
@@ -267,6 +281,7 @@ int RTnoProtocol::HandleReceivedPacket(void)
 		}
 		break;
 	case SEND_DATA:
+	  std::cout << "SEND_DATA return code received: ret=" << (int)packet_buffer[DATA_START_ADDR] << std::endl;
 		this->m_SendBusy = FALSE;
 		break;
 	default:
