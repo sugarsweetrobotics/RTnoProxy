@@ -1,20 +1,11 @@
-
-#ifndef PACKET_HEADER_INCLUDED
-#define PACKET_HEADER_INCLUDED
+#pragma once
 
 // Return Values
 #define TIMEOUT 1
 #define DATA_TIMEOUT 2
 #define CHECKSUM_ERROR 3
-
 #define INVALID_PACKET_INTERFACE 65
 #define INVALID_PACKET_DATASIZE  66
-
-// Packet Settings
-#define PACKET_HEADER_SIZE 2
-#define PACKET_INTERFACE 0
-#define DATA_LENGTH 1
-#define DATA_START_ADDR 2
 
 // Protocol
 // Interface
@@ -79,5 +70,3 @@
 #define Timer1ExecutionContext 0x22
 #define Timer2ExecutionContext 0x23
 
-
-#endif
