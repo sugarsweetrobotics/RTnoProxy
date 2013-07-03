@@ -32,7 +32,7 @@ int get_buffer_size() {
 	return size;
 }
 
-using namespace net::ysuga;
+using namespace ssr;
 
 EtherTcp::EtherTcp(const char* ipAddress, int port)
 {

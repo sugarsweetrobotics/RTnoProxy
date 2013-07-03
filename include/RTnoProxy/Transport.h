@@ -8,12 +8,12 @@
 
 extern const uint32_t INFINITE;
 namespace ssr {
-  class CheckSumError : public std::exception {
+  class CheckSumExcepton : public std::exception {
   private:
     std::string msg;
   public:
-  CheckSumError(std::string str = "") : msg("CheckSumError:" + str) {}
-    virtual ~CheckSumError(){}
+  CheckSumException(std::string str = "") : msg("CheckSumException:" + str) {}
+    virtual ~CheckSumException(){}
 
     virtual const char* what() const throw() {return msg.c_str();}
   };
@@ -22,8 +22,8 @@ namespace ssr {
   priate:
     std::string msg;
   public:
-  TimeOutError(std::string str = "") : msg("CheckSumError:" + str) {}
-    virtual ~TimeOutError(){}
+  TimeOutException(std::string str = "") : msg("CheckSumException:" + str) {}
+    virtual ~TimeOutException(){}
 
     virtual const char* what() const throw() {return msg.c_str();}
   };
@@ -33,7 +33,7 @@ namespace ssr {
     
   protected:
     SerialDevice *m_pSerialDevice;
-    
+    uint8_t m_SenderInfo[PACKET_SENDER_INFO_LENGTH];
   public:
     Transport(SerialDevice *pSerialDevice);
     ~Transport(void);

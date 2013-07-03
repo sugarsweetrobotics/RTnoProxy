@@ -26,12 +26,12 @@ namespace ssr {
     uint8_t getSum() {uint8_t sum = 0; for(uint32_t i = 0;i < getPacketLength();i++) sum+=m_pData[i]; return sum;}
 
   private:
-    void initialize(const uint8_t interFace, const uint8_t* sender, const uint8_t* data = NULL, const uint8_t size = 0) {
+    void initialize(const uint8_t interFace, const uint8_t* data = NULL, const uint8_t size = 0) {
       delete m_pData;
       m_pData = new uint8_t[size + PACKET_HEADER_SIZE + PACKET_SENDER_INFO_LENGTH];
       m_pData[0] = interFace;
       m_pData[1] = size;
-      memcpy(m_pData + PACKET_HEADER_SIZE, sender, PACKET_SENDER_INFO_LENGTH);
+      //memcpy(m_pData + PACKET_HEADER_SIZE, sender, PACKET_SENDER_INFO_LENGTH);
       if(size > 0) {
 	memcpy(m_pData + PACKET_HEADER_SIZE + PACKET_SENDER_INFO_LENGTH,
 	       data, size);
@@ -45,20 +45,24 @@ namespace ssr {
       memcpy(m_pData, p, size);
     }
     
-  RTnoPacket(const uint8_t interFace, const uint8_t* sender, const uint8_t* data = NULL, const uint8_t size = 0) :
+  RTnoPacket(const uint8_t interFace,  const uint8_t* data = NULL, const uint8_t size = 0) :
     m_pData(NULL){
-      initialize(interFace, sender, data, size);
+      initialize(interFace, data, size);
     }
     
   RTnoPacket(const RTnoPacket& p) : m_pData(NULL) {
-      initialize(p.getInterface(), p.getSenderInfo(), p.getData(), p.getDataLength());
+      initialize(p.getInterface(),
+		 //p.getSenderInfo(), 
+		 p.getData(), p.getDataLength());
     }
 
 
   public:
 
     void operator=(const RTnoPacket& p) {
-      initialize(p.getInterface(), p.getSenderInfo(), p.getData(), p.getDataLength());
+      initialize(p.getInterface(), 
+		 //p.getSenderInfo(), 
+		 p.getData(), p.getDataLength());
     }
       
     ~RTnoPacket() {

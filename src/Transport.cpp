@@ -69,7 +69,7 @@ int Transport::send(const Packet& packet) {
   return 0;
 }
 
-bool Transport::detectPacket() 
+bool Transport::isNew()
 {
 #ifdef DEBUG
   std::cout << "---Receiving Packet..." << std::endl;
@@ -123,7 +123,7 @@ Packet Transport::receive(const uint32_t wait_usec/*=INFINITE*/)
   }
   
   if((ret=read(&buf, 1, wait_usec)) < 0) {
-    return ret;
+    throw TimeOutException();
   }
   
   
@@ -138,7 +138,8 @@ Packet Transport::receive(const uint32_t wait_usec/*=INFINITE*/)
       std::cout << std::hex << (int)packet[2+i] << " " << std::ends;
     }
     std::cout << std::endl << "sum=" << std::dec << sum << "/" << buf << ":received." << std::endl;
-    return -CHECKSUM_ERROR;
+    //return -CHECKSUM_ERROR;
+    throw CheckSumException();
   }
   
   return PACKET_HEADER_SIZE + packet[DATA_LENGTH] + 1;

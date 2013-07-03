@@ -28,38 +28,44 @@ std::string RTnoProtocol::GetStringFromPacket(const unsigned char* start_adr, in
 	return ret;
 }
 
-int RTnoProtocol::GetRTnoProfile(RTnoProfile *profile)
+bool RTnoProtocol::waitCommand(const uint8_t command, const uint32_t wait_usec)
 {
+  RTnoPacket cmd_packet(command);
+  for(int i = 0;i < 10;i++) {
+    if(m_pTransport->isNew()) {
+      RTnoPacket pac = m_pTransport->receive(wait_usec);
+      if(pac.getInterface() == command) {
+	return true;
+      }
+    }
+  }
+  return false;
+}
+
+RTnoPacket  RTnoProtocol::getRTnoProfile() {
   std::cout << "-RTnoProtocol::getRTnoProfile() called." << std::endl;
-  uint8_t packet_buffer[MAX_PACKET_SIZE];
+  RTnoProfile prof;
   const RTnoPacket cmd_packet(GET_PROFILE);
   m_pTransport->send(cmd_packet);
-  
-
   while(1) {
-    int retval = m_pTransport->ReceivePacket(packet_buffer);
-    if(retval == 0) continue;
-    else if(retval < 0) {
-      std::cout << "--Packet Receive Failed." << std::endl;
-      return -1;
+    if(!m_pTransport->isNew()) {
+      coil::usleep(1000);
+      continue;
     }
-#ifdef DEBUG
-    std::cout << "--Packet Received." << std::endl;
-#endif
-    
-    std::string strbuf;
-    switch(packet_buffer[PACKET_INTERFACE]) {
+
+    RTnoPacket pac = m_pTransport->receive();
+    switch(pac.getInterface()) {
     case GET_PROFILE: // Return Code.
-      if(packet_buffer[DATA_START_ADDR] == RTNO_OK) {
+      if(pac.getData()[0] == RTNO_OK) {
 	std::cout << "--RTnoProtocol::getRTnoProfile() Succeeded." << std::endl;
-	return 0;
+	return prof;
       } else {
 	std::cout << "--RTnoProtocol::getRTnoProfile() Failed." << std::endl;
-	return -2;
+	throw GetProfileException();
       }
       break;
     case ADD_INPORT: 
-
+      
       strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
       std::cout << "--RTnoProtocol::AddInPort(" << strbuf << ":type_code=" << packet_buffer[DATA_START_ADDR] << std::endl;
       profile->AddInPort(packet_buffer[DATA_START_ADDR], strbuf.c_str());
