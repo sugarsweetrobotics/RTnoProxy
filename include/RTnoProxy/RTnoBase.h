@@ -34,8 +34,6 @@ namespace ssr {
 
     virtual ~RTnoBase();
 
-
-    virtual void Run(){}
     
     bool initialize();
 

@@ -6,21 +6,12 @@
 
 #include <iostream>
 
-#ifndef FALSE
-#define FALSE (0)
-#endif
 
-#ifndef TRUE
-#define TRUE (!FALSE)
-#endif
+using namespace ssr;
 
-using namespace net::ysuga;
-
-RTnoProtocol::RTnoProtocol(RTnoRTObjectWrapper* pRTObject, Transport *pTransport)
+RTnoProtocol::RTnoProtocol(RTnoRTObjectWrapper* pRTObject, Transport *pTransport) :
+  m_SendBusy(false), m_pRTObjectWrapper(pRTObject), m_pTransport(pTransport)
 {
-	m_SendBusy = FALSE;
-	m_pRTObjectWrapper = pRTObject;
-	m_pTransport = pTransport;
 }
 
 RTnoProtocol::~RTnoProtocol(void)
@@ -41,8 +32,10 @@ int RTnoProtocol::GetRTnoProfile(RTnoProfile *profile)
 {
   std::cout << "-RTnoProtocol::getRTnoProfile() called." << std::endl;
   uint8_t packet_buffer[MAX_PACKET_SIZE];
+  const RTnoPacket cmd_packet(GET_PROFILE);
+  m_pTransport->send(cmd_packet);
+  
 
-  m_pTransport->SendPacket(GET_PROFILE, 0, NULL);
   while(1) {
     int retval = m_pTransport->ReceivePacket(packet_buffer);
     if(retval == 0) continue;
