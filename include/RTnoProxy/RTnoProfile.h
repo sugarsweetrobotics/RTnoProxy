@@ -22,12 +22,16 @@ namespace ssr {
     
     virtual ~PortProfile() {}
     
-    uint8_t getTypeCode() {
+    const uint8_t& getTypeCode() {
       return m_TypeCode;
     }
     
-    std::string getPortName() {
-      return m_pPortName;
+    const std::string& getPortName() const {
+      return m_PortName;
+    }
+
+    const bool operator==(const PortProfile& p) {
+      return (getPortName() == p.getPortName());
     }
   };
   
@@ -73,16 +77,16 @@ namespace ssr {
     void removeInPort(const char* portName) {
       for(std::list<PortProfile>::iterator it = m_InPorts.begin(); it != m_InPorts.end(); ++it) {
 	if((*it).getPortName() == portName) { 
-	  m_InPortProfileList.remove((*it));
+	  m_InPorts.remove((*it));
 	  return;
 	}
       }
     }
     
     void removeOutPort(const char* portName) {
-      for(std::list<PortProfile*>::iterator it = m_OutPorts.begin(); it != m_OutPorts.end(); ++it) {
+      for(std::list<PortProfile>::iterator it = m_OutPorts.begin(); it != m_OutPorts.end(); ++it) {
 	if((*it).getPortName() == portName) {
-	  m_OutPortProfileList.remove((*it));
+	  m_OutPorts.remove((*it));
 	  return;
 	}
       }

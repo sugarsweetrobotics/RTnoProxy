@@ -95,7 +95,7 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	if(m_connectionType == "serial") {
 		try {
 			std::cout << "Opening SerialPort(" << m_comport << ")....." << std::ends;
-			m_pSerialDevice = new net::ysuga::Serial(m_comport.c_str(), m_baudrate);
+			m_pSerialDevice = new ssr::Serial(m_comport.c_str(), m_baudrate);
 		} catch (net::ysuga::ComOpenException & e) {
 			std::cout << "Fail(" << e.what() << ")" << std::endl;
 			return RTC::RTC_ERROR;
@@ -103,7 +103,7 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	} else if(m_connectionType == "tcp") {
 		try {
 			std::cout << "Connecting to " << m_ipAddress << ":" << m_portNumber << " with TCP" << std::ends;
-			m_pSerialDevice = new net::ysuga::EtherTcp(m_ipAddress.c_str(), m_portNumber);
+			m_pSerialDevice = new ssr::EtherTcp(m_ipAddress.c_str(), m_portNumber);
 
 		} catch (...) {
 			std::cout << "Fail" << std::endl;

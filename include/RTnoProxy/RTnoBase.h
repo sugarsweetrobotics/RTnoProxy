@@ -3,13 +3,11 @@
 #include "Thread.h"
 #include "RTnoProfile.h"
 
-namespace net {
-  namespace ysuga { 
+namespace ssr {
     class SerialDevice;
     class RTnoRTObjectWrapper;
     class Transport;
     class RTnoProtocol;
-  };
 };
 
 
@@ -22,15 +20,15 @@ namespace ssr {
 
   class RTnoBase : public net::ysuga::Thread {
   private:
-    net::ysuga::SerialDevice *m_pSerialDevice;
-    net::ysuga::RTnoProfile m_Profile;
-    net::ysuga::RTnoRTObjectWrapper *m_pRTObjectWrapper;
-    net::ysuga::Transport* m_pTransport;
-    net::ysuga::RTnoProtocol* m_pProtocol;
+    ssr::SerialDevice *m_pSerialDevice;
+    ssr::RTnoProfile m_Profile;
+    ssr::RTnoRTObjectWrapper *m_pRTObjectWrapper;
+    ssr::Transport* m_pTransport;
+    ssr::RTnoProtocol* m_pProtocol;
     RTC::DataFlowComponentBase* m_pRTC;
-    bool m_ProxySynchronousExecution;
+
   public:
-    RTnoBase(RTC::DataFlowComponentBase* pRTC, net::ysuga::SerialDevice* pSerial);
+    RTnoBase(RTC::DataFlowComponentBase* pRTC, ssr::SerialDevice* pSerial);
 
     virtual ~RTnoBase();
 

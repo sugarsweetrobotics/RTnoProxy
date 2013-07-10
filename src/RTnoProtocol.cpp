@@ -10,7 +10,7 @@
 using namespace ssr;
 
 RTnoProtocol::RTnoProtocol(RTnoRTObjectWrapper* pRTObject, Transport *pTransport) :
-  m_SendBusy(false), m_pRTObjectWrapper(pRTObject), m_pTransport(pTransport)
+  m_pTransport(pTransport),m_pRTObjectWrapper(pRTObject)
 {
 }
 
@@ -18,34 +18,21 @@ RTnoProtocol::~RTnoProtocol(void)
 {
 }
 
-std::string RTnoProtocol::GetStringFromPacket(const unsigned char* start_adr, int length)
-{
-	char* cbuf = new char[length+1];
-	memcpy(cbuf, start_adr, length);
-	cbuf[length] = 0;
-	std::string ret(cbuf);
-	delete cbuf;
-	return ret;
-}
-
-bool RTnoProtocol::waitCommand(const uint8_t command, const uint32_t wait_usec)
-{
-  RTnoPacket cmd_packet(command);
+RTnoPacket RTnoProtocol::waitCommand(const uint8_t command, const uint32_t wait_usec) {
   for(int i = 0;i < 10;i++) {
     if(m_pTransport->isNew()) {
       RTnoPacket pac = m_pTransport->receive(wait_usec);
       if(pac.getInterface() == command) {
-	return true;
+	return pac;
       }
     }
   }
-  return false;
+  throw TimeOutException();
 }
 
-RTnoPacket  RTnoProtocol::getRTnoProfile() {
+const RTnoProfile&  RTnoProtocol::getRTnoProfile(const uint32_t wait_usec) {
   std::cout << "-RTnoProtocol::getRTnoProfile() called." << std::endl;
-  RTnoProfile prof;
-  const RTnoPacket cmd_packet(GET_PROFILE);
+  static const RTnoPacket cmd_packet(GET_PROFILE);
   m_pTransport->send(cmd_packet);
   while(1) {
     if(!m_pTransport->isNew()) {
@@ -53,242 +40,189 @@ RTnoPacket  RTnoProtocol::getRTnoProfile() {
       continue;
     }
 
-    RTnoPacket pac = m_pTransport->receive();
+    RTnoPacket pac = m_pTransport->receive(wait_usec);
     switch(pac.getInterface()) {
     case GET_PROFILE: // Return Code.
-      if(pac.getData()[0] == RTNO_OK) {
-	std::cout << "--RTnoProtocol::getRTnoProfile() Succeeded." << std::endl;
-	return prof;
-      } else {
-	std::cout << "--RTnoProtocol::getRTnoProfile() Failed." << std::endl;
-	throw GetProfileException();
-      }
-      break;
+      onGetProfile(pac);
+      return m_Profile;
+
     case ADD_INPORT: 
-      
-      strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
-      std::cout << "--RTnoProtocol::AddInPort(" << strbuf << ":type_code=" << packet_buffer[DATA_START_ADDR] << std::endl;
-      profile->AddInPort(packet_buffer[DATA_START_ADDR], strbuf.c_str());
+      onAddInPort(pac);
       break;
+
     case ADD_OUTPORT:
-      strbuf = GetStringFromPacket(packet_buffer+DATA_START_ADDR+1, packet_buffer[DATA_LENGTH]-1);
-      std::cout << "--RTnoProtocol::AddOutPort(" << strbuf << ":type_code=" << packet_buffer[DATA_START_ADDR] << std::endl;
-      profile->AddOutPort(packet_buffer[DATA_START_ADDR], strbuf.c_str());
+      onAddOutPort(pac);
       break;
+
     case PACKET_ERROR:
-      std::cout << "--RTnoProtocol::getRTnoProfile(): Packet Failed :retval = " << (int)((uint8_t*)packet_buffer)[DATA_LENGTH+1] << std::endl;
-      return (int)((int8_t*)packet_buffer)[DATA_LENGTH+1];
-    default:
-      std::cout << "Unknown Command (" << packet_buffer[PACKET_INTERFACE] << ")" << std::endl;
-      return -1;
+      std::cout << "--RTnoProtocol::getRTnoProfile(): Packet Failed" << std::endl;
+      throw GetProfileException();
+    default: 
+      std::cout << "Unknown Command (" << pac.getInterface() << ")" << std::endl;
     }
   }
 }
 
-
-
-unsigned char RTnoProtocol::GetRTnoStatus()
-{	
-  //	unsigned char packet_buffer[MAX_PACKET_SIZE];
-	std::cout << "-RTnoProtocol::GetRTnoStatus() called." << std::endl;
-//	unsigned char packet_buffer[MAX_PACKET_SIZE];
-
-	m_pTransport->SendPacket(GET_STATUS, 0, NULL);
-	return ReceiveReturnCode(GET_STATUS);
-}
-
-unsigned char RTnoProtocol::GetRTnoExecutionContextType()
+void RTnoProtocol::onGetProfile(const RTnoPacket& packet)
 {
-	std::cout << "-RTnoProtocol::GetRTnoExecutionContextType() called." << std::endl;
-	//	unsigned char packet_buffer[MAX_PACKET_SIZE];
-	
-	m_pTransport->SendPacket(GET_CONTEXT, 0, NULL);
-	return ReceiveReturnCode(GET_CONTEXT);
-}
-
-int RTnoProtocol::ReceiveReturnCode(unsigned char intf) {
-	unsigned char packet_buffer[MAX_PACKET_SIZE];
-
-	while(1) {
-	  if (m_SendBusy) {
-	    // if timeout, m_SendBusy = false;
-	  }
-
-		int ret = m_pTransport->ReceivePacket(packet_buffer);
-		if(ret == 0) continue;
-		if(ret == -TIMEOUT) {
-			std::cout << "---Timeout Error." << std::endl;
-			return -TIMEOUT; // Timeout or Checksum error.
-		} else if(ret == -CHECKSUM_ERROR) {
-			std::cout << "---Checksum Error." << std::endl;
-			return -CHECKSUM_ERROR;
-		}
-
-		if(packet_buffer[PACKET_INTERFACE] == SEND_DATA) {
-			m_SendBusy = FALSE;
-			continue;
-		}
-
-		if(packet_buffer[PACKET_INTERFACE] == RECEIVE_DATA) {
-			ReceiveData(packet_buffer);
-			continue;
-		}
-
-		if(packet_buffer[PACKET_INTERFACE] == PACKET_ERROR) {
-		  std::cout << "--RTnoProtocol::GetReturnCode : Packet Error :ret = " << (int)((uint8_t*)packet_buffer)[DATA_LENGTH+1] << std::endl;
-			continue;
-		}
-
-		if(packet_buffer[PACKET_INTERFACE] != intf) {
-			std::cout << "---Unknown Packet Interface [" << packet_buffer[PACKET_INTERFACE] << "] expected:" << intf << std::endl;
-			return -2;
-		}
-
-		return packet_buffer[DATA_START_ADDR];
-	}
-}
-
-
-int RTnoProtocol::ActivateRTno()
-{
-  std::cout << "-RTnoProtocol::ActivateRTno() called...." << std::ends;
-  m_pTransport->SendPacket(ACTIVATE, 0, NULL);
-  int ret = ReceiveReturnCode(ACTIVATE);
-  if(ret != RTNO_OK) {
-    std::cout << "Failed." << std::endl;
-    return ret;
+  if (packet.getData()[0] != RTNO_OK) {
+    std::cout << "--RTnoProtocol::getRTnoProfile() Failed." << std::endl;
+    throw GetProfileException();
   }
-  std::cout << "Succeed." << std::endl;
-  return 0;
 }
 
-int RTnoProtocol::ResetRTno() 
+PortProfile RTnoProtocol::parsePortProfile(const RTnoPacket& packet) {
+  char strbuf[64];
+  memcpy(strbuf, packet.getData()+1, packet.getDataLength()-1);
+  strbuf[packet.getDataLength()-1] = 0;
+  return PortProfile(packet.getData()[0], strbuf);
+}
+
+void RTnoProtocol::onAddInPort(const RTnoPacket& packet) {
+  m_Profile.appendInPort(parsePortProfile(packet));
+}
+
+void RTnoProtocol::onAddOutPort(const RTnoPacket& packet) {
+  m_Profile.appendOutPort(parsePortProfile(packet));
+}
+
+uint8_t RTnoProtocol::getRTnoStatus() {
+  static const RTnoPacket cmd_packet(GET_STATUS);
+  m_pTransport->send(cmd_packet);
+  RTnoPacket pac = waitCommand(GET_STATUS, 20*1000);
+  return pac.getData()[0];
+}
+
+uint8_t RTnoProtocol::getRTnoExecutionContextType() {
+  static const RTnoPacket cmd_packet(GET_CONTEXT);
+  m_pTransport->send(cmd_packet);
+  RTnoPacket pac = waitCommand(GET_CONTEXT, 20*1000);
+  return pac.getData()[0];
+}
+
+uint8_t RTnoProtocol::activate() {
+  static const RTnoPacket cmd_packet(RTNO_ACTIVATE);
+  m_pTransport->send(cmd_packet);
+  RTnoPacket pac = waitCommand(RTNO_ACTIVATE, 20*1000);
+  return pac.getData()[0];
+}
+
+uint8_t RTnoProtocol::reset() {
+  static const RTnoPacket cmd_packet(RTNO_RESET);
+  m_pTransport->send(cmd_packet);
+  RTnoPacket pac = waitCommand(RTNO_RESET, 20*1000);
+  return pac.getData()[0];
+}
+
+uint8_t RTnoProtocol::deactivate() {
+  static const RTnoPacket cmd_packet(RTNO_DEACTIVATE);
+  m_pTransport->send(cmd_packet);
+  RTnoPacket pac = waitCommand(RTNO_DEACTIVATE, 20*1000);
+  return pac.getData()[0];
+}
+
+uint8_t RTnoProtocol::sendData(const std::string& portName, const uint8_t* data, const uint8_t length) {
+  int namelen = portName.length();//strlen(portName);
+  uint8_t buffer[64];
+  buffer[0] = namelen;
+  buffer[1] = length;
+  memcpy(buffer+2, portName.c_str(), namelen);
+  memcpy(buffer+2+namelen, data, length);
+  RTnoPacket packet(SEND_DATA, buffer, 2 + namelen + length);
+  m_pTransport->send(packet);
+  return 0;
+ }
+
+
+int32_t RTnoProtocol::sendExecuteTrigger(void) {
+  static const RTnoPacket cmd_packet(RTNO_EXECUTE);
+  return m_pTransport->send(cmd_packet);
+}
+
+void RTnoProtocol::receiveData(const uint8_t* data) 
 {
-  std::cout << "-RTnoProtocol::ErrorRTno() called....";
-  m_pTransport->SendPacket(RTNO_RESET, 0, NULL);
-  int ret = ReceiveReturnCode(RTNO_RESET);
-  if(ret != RTNO_OK) {
-    std::cout << "Failed." << std::endl;
-    return ret;
+  char name_buffer[16];
+  memcpy(name_buffer, data+2, data[0]); name_buffer[data[0]] = 0;
+  OutPortWrapperBase* outPort = m_pRTObjectWrapper->GetOutPort(name_buffer);
+  if(outPort == NULL) {
+    throw UnknownOutPortRequestedException();
+  } 
+	
+  outPort->Write((void*)(data + 2 + data[0]), data[1] / outPort->getTypeSizeInArduino());
+}
+
+void RTnoProtocol::handleReceivedPacket(const uint32_t wait_usec) {
+
+  if(m_ProxySynchronousExecution) {
+    sendExecuteTrigger();
   }
-  std::cout << "Success." << std::endl;
-  return 0;
-}
-int RTnoProtocol::DeactivateRTno()
-{
-  std::cout << "-RTnoProtocol::DeactivateRTno() called....";
-  m_pTransport->SendPacket(DEACTIVATE, 0, NULL);
-  int ret = ReceiveReturnCode(DEACTIVATE);
-  if(ret != RTNO_OK) {
-    std::cout << "Failed." << std::endl;
-    return ret;
-  }
-  std::cout << "Succeed." << std::endl;
-  return 0;
-}
 
-
-int RTnoProtocol::SendData(const char* portName, const unsigned char* data, int length)
-{
-	while(this->m_SendBusy) {
-		coil::TimeValue tv(1000.0); // 1 ms;
-		coil::sleep(tv);
-	}
-	std::cout << "-RTnoProtocol::SendData(" << portName << ") called."<< std::endl;
-	unsigned char packet_buffer[MAX_PACKET_SIZE];
-
-	int namelen = strlen(portName);
-	packet_buffer[0] = namelen;
-	packet_buffer[1] = length;
-	memcpy(packet_buffer+2, portName, namelen);
-	memcpy(packet_buffer+2+namelen, data, length);
-	m_SendBusy = TRUE;
-	m_pTransport->SendPacket(SEND_DATA, length + namelen + 2, packet_buffer);
-
-	/*
-	while(1) {
-		int ret = m_pTransport->ReceivePacket(packet_buffer);
-		if(ret == 0) {
-			continue;
-		} else if(ret < 0) {
-			return -1;
-		}
-
-		if(packet_buffer[PACKET_INTERFACE] != SEND_DATA) {
-			return -2;
-		}
-
-		if(packet_buffer[DATA_START_ADDR] != RTNO_OK) {
-			return -3;
-		}
-		return 0;
-	}
-	*/
-	return 0;
-}
-
-
-int RTnoProtocol::SendExecuteTrigger(void)
-{
-  return m_pTransport->SendPacket(EXECUTE, 0, NULL);
-}
-
-int RTnoProtocol::ReceiveData(unsigned char* packet_buffer) 
-{
-	char nameBuffer[16];
-	int namelen = packet_buffer[DATA_START_ADDR];
-	int datalen = packet_buffer[DATA_START_ADDR+1];
-	memcpy(nameBuffer, &(packet_buffer[DATA_START_ADDR+2]), namelen);
-	nameBuffer[namelen] = 0;
-
-	OutPortWrapperBase* outPort = m_pRTObjectWrapper->GetOutPort(nameBuffer);
-	if(outPort == NULL) {
-		return -1;
-	} 
-	
-	outPort->Write((void*)(packet_buffer + DATA_START_ADDR + 2 + namelen), datalen / outPort->getTypeSizeInArduino());
-	
-	return 0;
-}
-
-int RTnoProtocol::HandleReceivedPacket(void)
-{
-	unsigned char packet_buffer[MAX_PACKET_SIZE];
-	int ret = m_pTransport->ReceivePacket(packet_buffer, 10*1000);
-	if(ret == 0) return 0;
-	else if(ret < 0) {
-	  if (ret == -CHECKSUM_ERROR) {
-	    //return 0;
-	  }
-	  std::cout << "-RTnoProtocol::HandleReceivedPacket() failed: ret-" << ret << std::endl;
-	  return ret;
-	}
-	
-	//if(packet_buffer[PACKET_INTERFACE] == RECEIVE_DATA) {
-	//	ReceiveData(packet_buffer);
-	//}
-	
-	//std::cout << "--RTnoProtocol::HandleReceivePacket() received:" << packet_buffer[PACKET_INTERFACE] << std::endl;
-
-	switch(packet_buffer[PACKET_INTERFACE]) {
+  bool endFlag = false;
+  while(!endFlag) {
+    if (m_pTransport->isNew()) {
+      try {
+	RTnoPacket pac = m_pTransport->receive(wait_usec);
+	switch(pac.getInterface()) {
 	case RECEIVE_DATA:
-		ReceiveData(packet_buffer);
-		break;
-	case EXECUTE:
-		if(packet_buffer[DATA_START_ADDR] != RTNO_OK) {
-			return -4;
-		}
-		break;
+	  //ReceiveData(packet_buffer);
+	  receiveData(pac.getData());
+	  break;
+	case RTNO_EXECUTE:
+	  if(pac.getData()[0] != RTNO_OK) {
+	    throw ExecuteFailedException();
+	  }
+	  endFlag = true;
+	  break;
 	case SEND_DATA:
-	  std::cout << "SEND_DATA return code received: ret=" << (int)packet_buffer[DATA_START_ADDR] << std::endl;
-		this->m_SendBusy = FALSE;
-		break;
+	  //this->m_SendBusy = FALSE;
+	  break;
 	default:
-		std::cout << "Unknown Packet [" << packet_buffer[PACKET_INTERFACE] << "]" << std::endl;
-		return -2;
-		break;
+	  std::cout << "Unknown Packet: " << pac.getInterface() << std::endl;
+	  endFlag = true;
+	  break;
 	}
-
-	return packet_buffer[PACKET_INTERFACE];
+      } catch (TimeOutException& ex) {
+	if(!m_ProxySynchronousExecution) {
+	  throw ex;
+	} else {
+	  break;
+	}
+      }
+    }
+  }
 }
 
+uint8_t RTnoProtocol::initialize()
+{
+  uint8_t status = getRTnoStatus();
+  std::cout << "RTno Status == " << (int)status << std::endl;
+  int ret;
+  switch(status) {
+  case STATE_ACTIVE:
+    if((ret = deactivate()) != 0) {
+      return false;
+    }
+    break;
+  case STATE_INACTIVE:
+    break;
+  case STATE_ERROR:
+    if((ret = reset()) != 0) {
+      return false;
+    }
+    break;
+  }
+  
+  uint8_t contextType = getRTnoExecutionContextType();
+  std::cout << "Execution Context Type == " << (int)contextType << std::endl;
+  switch(contextType) {
+  case ProxySynchronousExecutionContext:
+    std::cout << "--ProxySynchronousExecutionContext detected!" << std::endl;
+    m_ProxySynchronousExecution = true;
+    break;
+  default:
+    m_ProxySynchronousExecution = false;
+  }
+  
+  std::cout << "onInitialized OK." << std::endl;
+  return 0;
+}

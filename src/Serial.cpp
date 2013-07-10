@@ -1,13 +1,13 @@
 #include "Serial.h"
 
-using namespace net::ysuga;
+using namespace ssr;
 
 Serial::Serial(const char* portName, const int boadrate)
 {
-	m_pSerialPort = new net::ysuga::SerialPort(portName, boadrate);
+  m_pSerialPort = new net::ysuga::SerialPort(portName, boadrate);
 }
 
 Serial::~Serial(void)
 {
-	delete m_pSerialPort;
+  delete m_pSerialPort;
 }

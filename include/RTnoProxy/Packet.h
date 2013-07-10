@@ -10,9 +10,9 @@
 // Protocol
 // Interface
 #define INITIALIZE 'I'
-#define ACTIVATE 'A'
-#define DEACTIVATE 'D'
-#define EXECUTE 'E'
+#define RTNO_ACTIVATE 'A'
+#define RTNO_DEACTIVATE 'D'
+#define RTNO_EXECUTE 'E'
 #define ONERROR 'C'
 #define RTNO_RESET 'R'
 #define GET_STATUS 'X'
@@ -34,6 +34,17 @@
 #define PACKET_ERROR 'F'
 
 #define OUTPORT_WRITE 'W'
+
+// state
+enum {
+  STATE_CREATED='C',
+  STATE_INACTIVE='I',
+  STATE_ACTIVE='A',
+  STATE_ERROR='E',
+  STATE_NONE='N',
+};
+
+
 
 // Communication Settings
 #define PACKET_WAITING_TIME 3000 // ms

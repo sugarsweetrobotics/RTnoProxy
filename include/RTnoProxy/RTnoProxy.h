@@ -280,7 +280,7 @@ class RTnoProxy
   std::string m_ipAddress;
   int m_portNumber;
 
-  net::ysuga::SerialDevice *m_pSerialDevice;
+  ssr::SerialDevice *m_pSerialDevice;
 
   ssr::RTnoBase *m_pRTno;
 

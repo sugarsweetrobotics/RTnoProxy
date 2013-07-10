@@ -10,10 +10,11 @@
 #define PACKET_WAITING_DELAY 100 //us
 #define PACKET_WAITING_COUNT (PACKET_WAITING_TIME*1000/PACKET_WAITING_DELAY)
 
+//#define DEBUG
 
 const uint32_t INFINITE = 0xFFFFFFFF;
 
-using namespace net::ysuga;
+using namespace ssr;
 
 Transport::Transport(SerialDevice* pSerialDevice)
 {
@@ -33,7 +34,7 @@ int32_t Transport::read(uint8_t* buffer, uint8_t size, uint32_t wait_usec)
   coil::TimeMeasure tm;
   tm.tick();
   while(1) {
-    if(m_pSerialDevice->GetSizeInRxBuffer() >= size) {
+    if(m_pSerialDevice->getSizeInRxBuffer() >= size) {
       break;
     }
     tm.tack();
@@ -43,40 +44,36 @@ int32_t Transport::read(uint8_t* buffer, uint8_t size, uint32_t wait_usec)
     }
   }
 
-  m_pSerialDevice->Read(buffer, size);
+  m_pSerialDevice->read(buffer, size);
   return size;
 }
 
 int32_t Transport::write(const uint8_t* buffer, const uint8_t size) 
 {
   for(uint8_t i = 0;i < size;i++) {
-    m_pSerialDevice->Write(buffer+i, 1);
+    m_pSerialDevice->write(buffer+i, 1);
     coil::usleep(PACKET_SENDING_DELAY);
   }
   return size;
 }
 
 
-int Transport::send(const Packet& packet) {
+int Transport::send(const RTnoPacket& packet) {
   const uint8_t headers[2] = {0x0a, 0x0a};
   write(headers, 2);
-
-  write(packet.getData(), packet.getDataLength());
-
+  write(packet.serialize(), packet.getPacketLength());
   uint8_t sum = packet.getSum();
-
   write(&sum, 1);
   return 0;
 }
 
-bool Transport::isNew()
-{
+bool Transport::isNew(const uint32_t wait_usec) {
 #ifdef DEBUG
   std::cout << "---Receiving Packet..." << std::endl;
 #endif
   uint8_t buf;
   while(1) {
-    if (read(&interface, 1, wait_usec) < 0) {
+    if (read(&buf, 1, wait_usec) < 0) {
       return false;
     }
     if(buf != 0x0a) {
@@ -96,51 +93,43 @@ bool Transport::isNew()
   return true;
 }
 
-Packet Transport::receive(const uint32_t wait_usec/*=INFINITE*/)
+RTnoPacket Transport::receive(const uint32_t wait_usec/*=INFINITE*/)
 {
-  uint8_t interface, length;
-  if(read(packet, PACKET_HEADER_SIZE, wait_usec) < 0) {
+  uint8_t header[PACKET_HEADER_SIZE];
+  if(read(header, PACKET_HEADER_SIZE, wait_usec) < 0) {
     throw TimeOutException();
   }
 
   uint8_t sender[4];
-  if(read(sender, 4, wait_usec) < 0) {
-    throw TimeOutException();
-  }
-#ifdef DEBUG
-  std::cout << "----Interface   = " << (int)packet[0] << std::endl;
-  std::cout << "----Data Length = " << (int)packet[DATA_LENGTH] << std::endl;
-#endif
+  m_pSerialDevice->getSenderInfo(sender);
+  //if(read(sender, 4, wait_usec) < 0) {
+  //    throw TimeOutException();
+  //  }
 
   uint8_t data_buffer[256];
-  if(read(data_buffer, length, wait_usec) < 0) {
+  if(read(data_buffer, header[1] , wait_usec) < 0) {
     throw TimeOutException();
   }
   
-  uint8_t sum = 0x0a + 0x0a + sender[0] + sender[1] + sender[2] + sender[3];
-  for(uint8_t i = 0;i < PACKET_HEADER_SIZE + packet[DATA_LENGTH];i++) {
-    sum += packet[i];
-  }
+  RTnoPacket packet(header[0], data_buffer, header[1]);
+  uint8_t sum = packet.getSum();
+#ifdef DEBUG
+  std::cout << "-Received Packet" << std::endl;
+  packet.dump();
+#endif
   
-  if((ret=read(&buf, 1, wait_usec)) < 0) {
+  uint8_t buf;
+  if(read(&buf, 1, wait_usec) < 0) {
     throw TimeOutException();
   }
   
   
   if(sum != buf) {
-    std::cout << "--CheckSum Error. Packet Dump(len=" << (int)packet[DATA_LENGTH] << "):" << std::ends;
-    std::cout << std::hex << (int)packet[0] << " " << (int)packet[1] << " ";
-    for (int i = 0;i < 4;i++) {
-      std::cout << (int)sender[i] << " " << std::ends;
-    }
-    std::cout << std::endl;
-    for (int i = 0;i < packet[DATA_LENGTH];i++) {
-      std::cout << std::hex << (int)packet[2+i] << " " << std::ends;
-    }
-    std::cout << std::endl << "sum=" << std::dec << sum << "/" << buf << ":received." << std::endl;
+    std::cout << "--CheckSum Error. Packet Dump" << std::endl;
+    packet.dump();
     //return -CHECKSUM_ERROR;
     throw CheckSumException();
   }
   
-  return PACKET_HEADER_SIZE + packet[DATA_LENGTH] + 1;
+  return packet;
 }

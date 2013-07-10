@@ -2,13 +2,13 @@
 
 #include "libysuga.h"
 
+#include <stdint.h>
 #ifdef WIN32
 #include <windows.h>
 
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
-
 
 #endif
 
@@ -63,8 +63,8 @@ namespace net {
 
 		public:
 			int setNonBlock(unsigned int flag);
-			int recv(char* buf, int len);
-			int send(const char* buf, int len);
+			int recv(uint8_t* buf, uint32_t len);
+			int send(const uint8_t* buf, uint32_t len);
 		};
 
 	};

@@ -1,5 +1,3 @@
-
-
 #include "stdafx.h"
 #include <coil/Time.h>
 
@@ -12,18 +10,11 @@
 #include "InPortWrapper.h"
 #include "RTnoBase.h"
 
-enum {
-  CREATED='C',
-  INACTIVE='I',
-  ACTIVE='A',
-  RTCERROR='E',
-  NONE='N',
-};
 
-using namespace net::ysuga;
+//using namespace net::ysuga;
 using namespace ssr;
 
-RTnoBase::RTnoBase(RTC::DataFlowComponentBase* pRTC, net::ysuga::SerialDevice* pSerial) {
+RTnoBase::RTnoBase(RTC::DataFlowComponentBase* pRTC, SerialDevice* pSerial) {
   m_pRTC = pRTC;
   m_pSerialDevice = pSerial;
   m_pTransport = new Transport(m_pSerialDevice);
@@ -43,49 +34,20 @@ RTnoBase::~RTnoBase()
 
 bool RTnoBase::initialize()
 {
-  m_pProtocol->GetRTnoProfile(&m_Profile); 
+  RTnoProfile profile = m_pProtocol->getRTnoProfile(INFINITE);
 
   std::cout << "-Parsing RTnoProfile." << std::endl;
-  PortList* pInPortList = m_Profile.GetInPortList();
-  for(PortListIterator it = pInPortList->begin();it != pInPortList->end();++it) {
-    m_pRTObjectWrapper->AddInPort((*it));
+  PortList inPorts = profile.inPorts();
+  for(PortListIterator it = inPorts.begin();it != inPorts.end();++it) {
+    m_pRTObjectWrapper->addInPort((*it));
   }
-  PortList* pOutPortList = m_Profile.GetOutPortList();
-  for(PortListIterator it = pOutPortList->begin();it != pOutPortList->end();++it) {
-    m_pRTObjectWrapper->AddOutPort((*it));
+  PortList outPorts = profile.outPorts();
+  for(PortListIterator it = outPorts.begin();it != outPorts.end();++it) {
+    m_pRTObjectWrapper->addOutPort((*it));
   }
   std::cout << "-Success." << std::endl;
-  
-  unsigned char status = m_pProtocol->GetRTnoStatus();
-  std::cout << "RTno Status == " << (int)status << std::endl;
-  int ret;
-  switch(status) {
-  case ACTIVE:
-    if((ret = m_pProtocol->DeactivateRTno()) != 0) {
-      return false;
-    }
-    break;
-  case INACTIVE:
-    break;
-  case RTCERROR:
-    if((ret = m_pProtocol->ResetRTno()) != 0) {
-      return false;
-    }
-    break;
-  }
-  
-  unsigned char contextType = m_pProtocol->GetRTnoExecutionContextType();
-  std::cout << "Execution Context Type == " << (int)contextType << std::endl;
-  switch(contextType) {
-  case ProxySynchronousExecutionContext:
-    std::cout << "--ProxySynchronousExecutionContext detected!" << std::endl;
-    this->m_ProxySynchronousExecution = true;
-    break;
-  default:
-    m_ProxySynchronousExecution = false;
-  }
-  
-  std::cout << "onInitialized OK." << std::endl;
+
+  m_pProtocol->initialize();
   return true;
 }
 
@@ -93,112 +55,38 @@ bool RTnoBase::initialize()
 
 bool RTnoBase::activate()
 {
-  int ret;
-  if((ret = m_pProtocol->ActivateRTno()) == 0) {
-    
-    return true;
-  }
-  
-  std::cout << "onActivated failed." << std::endl;
-  std::cout << " -- Error Code is " << ret << std::endl;
-  return false;
+  m_pProtocol->activate();
+  return true;
 }
 
 
 bool RTnoBase::deactivate()
 {
-  int ret;
-  if((ret = m_pProtocol->DeactivateRTno()) == 0) {
-    return true;
-  }
-  
-  std::cout << "onDeactivated failed." << std::endl;
-  std::cout << " -- Error Code is " << ret << std::endl;
-  return false;
+  m_pProtocol->deactivate();
+  return true;
 }
 
 
 bool RTnoBase::execute()
 {
-  std::cout << "RTnoBase::execute()" << std::endl;
-
-  while(m_pProtocol->IsSendBusy()) {
-    int ret = m_pProtocol->HandleReceivedPacket();
-    std::cout << "ret = " << ret << std::endl;
-    if(ret == 0) { // No Data Received.
-      break;
-    }
-
-    
-    
-    if(ret < 0) {
-      std::cout << "--RTnoProxy::OnExecute() failed (error code = " << ret << ")" << std::endl;
-      return false;
-    }
-    
-  }
-
-
-
   InPortMap* pInPortMap = m_pRTObjectWrapper->GetInPortMap();
   for(InPortMapIterator it = pInPortMap->begin();it != pInPortMap->end();++it) {
     std::string name = (*it).first;
     InPortWrapperBase* inPort = (*it).second;
 
     if(inPort->isNew()) {
-        std::cout << "-reading InPort:" << name << std::endl;
+      std::cout << "-reading InPort:" << name << std::endl;
       std::cout << "--received." << std::endl;
       unsigned char packet_buffer[MAX_PACKET_SIZE];
       int len = inPort->Read();
       inPort->Get(packet_buffer, len);
-      m_pProtocol->SendData(name.c_str(), packet_buffer, len * inPort->getTypeSizeInArduino());
+      m_pProtocol->sendData(name.c_str(), packet_buffer, len * inPort->getTypeSizeInArduino());
     }
   }
 
 
-  while(1) {
-    int ret = m_pProtocol->HandleReceivedPacket();
-    std::cout << "ret = " << ret << std::endl;
-    if(ret == 0) { // No Data Received.
-      break;
-    }
-    
-    if(ret < 0) {
-      std::cout << "--RTnoProxy::OnExecute() failed (error code = " << ret << ")" << std::endl;
-      return false;
-    }
-    
-  }
- 
   
-  if(this->m_ProxySynchronousExecution) {
-    m_pProtocol->SendExecuteTrigger();
-  }
-  
-  
-  while(1) {
-    int ret = m_pProtocol->HandleReceivedPacket();
-    if(ret == 0) { // No Data Received.
-      if(m_ProxySynchronousExecution) {
-	continue; // if ProxySynchronousExecution, wait for EXECUTE packet.
-      }
-      break;
-    }
-    
-    
-    if(ret < 0) {
-      if (ret == -TIMEOUT) {
-	std::cout << "--RTnoProxy::onExecute() timeout." << std::endl;
-	continue;
-      }
-      std::cout << "--RTnoProxy::OnExecute() failed (error code = " << ret << ")" << std::endl;
-      return false;
-    }
-    
-    if(ret == EXECUTE && m_ProxySynchronousExecution) {
-      break;
-    }
-  }
+  m_pProtocol->handleReceivedPacket(INFINITE);
   
   return true;
 }

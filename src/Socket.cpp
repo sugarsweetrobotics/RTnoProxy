@@ -59,12 +59,12 @@ int Socket::setNonBlock(unsigned int flag)
 #endif
 }
 
-int Socket::recv(char* buf, int len)
+int Socket::recv(uint8_t* buf, uint32_t len)
 {
   return ::recv(m_Socket, buf, len, 0);
 }
 
-int Socket::send(const char* buf, int len)
+int Socket::send(const uint8_t* buf, uint32_t len)
 {
   return  ::send(m_Socket, buf, len, 0);
 }
