@@ -6,7 +6,7 @@
 #ifdef WIN32
 
 #ifdef LIBYSUGA_EXPORTS
-#define LIBYSUGA_API __declspec(dllexport)
+#define LIBYSUGA_API //__declspec(dllexport)
 #else  // ifdef LIBYSUGA_EXPORTS
 #ifdef LIBYSUGA_STATIC_EXPORTS
 #define LIBYSUGA_API 
@@ -14,7 +14,7 @@
 #ifdef _LIB
 #define LIBYSUGA_API
 #else
-#define LIBYSUGA_API __declspec(dllimport)
+#define LIBYSUGA_API //__declspec(dllimport)
 #endif // ifdef _LIB
 #endif // ifdef LIBYSUGA_STATIC_EXPORTS
 #endif // ifdef LIBYSUGA_EXPORTS

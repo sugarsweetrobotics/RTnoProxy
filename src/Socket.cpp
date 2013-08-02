@@ -61,11 +61,11 @@ int Socket::setNonBlock(unsigned int flag)
 
 int Socket::recv(uint8_t* buf, uint32_t len)
 {
-  return ::recv(m_Socket, buf, len, 0);
+  return ::recv(m_Socket, (char*)buf, len, 0);
 }
 
 int Socket::send(const uint8_t* buf, uint32_t len)
 {
-  return  ::send(m_Socket, buf, len, 0);
+  return  ::send(m_Socket, (char*)buf, len, 0);
 }
 

@@ -6,7 +6,7 @@
 #include <string>
 #include <exception>
 
-extern const uint32_t INFINITE;
+extern const uint32_t RTNO_INFINITE;
 namespace ssr {
 
   class CheckSumException : public std::exception {
@@ -43,14 +43,14 @@ namespace ssr {
   public:
     //    //int SendPacket(const Packet& packet);
     int32_t send(const RTnoPacket& packet);
-    //int32_t receive(RTnoPacket* pPacket, const uint32_t wait_usec=INFINITE);
+    //int32_t receive(RTnoPacket* pPacket, const uint32_t wait_usec=RTNO_INFINITE);
     RTnoPacket receive(const uint32_t wait_usec);
-    //    int32_t ReceivePacket(uint8_t* packet, const uint32_t wait_usec=INFINITE);
+    //    int32_t ReceivePacket(uint8_t* packet, const uint32_t wait_usec=RTNO_INFINITE);
     
-    bool isNew(const uint32_t wait_usec = INFINITE);
+    bool isNew(const uint32_t wait_usec = RTNO_INFINITE);
     //int IsReceived();
   private:
-    inline int32_t read(uint8_t *buffer, uint8_t size, const uint32_t wait_usec = INFINITE);
+    inline int32_t read(uint8_t *buffer, uint8_t size, const uint32_t wait_usec = RTNO_INFINITE);
     inline int32_t write(const uint8_t *buffer, const uint8_t size);
     int _Wait(unsigned char buffer_size);
   };

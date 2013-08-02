@@ -12,7 +12,7 @@
 
 //#define DEBUG
 
-const uint32_t INFINITE = 0xFFFFFFFF;
+const uint32_t RTNO_INFINITE = 0xFFFFFFFF;
 
 using namespace ssr;
 
@@ -39,7 +39,7 @@ int32_t Transport::read(uint8_t* buffer, uint8_t size, uint32_t wait_usec)
     }
     tm.tack();
     coil::TimeValue tv = tm.interval();
-    if (tv.usec() > wait_usec && wait_usec != INFINITE) {
+    if (tv.usec() > wait_usec && wait_usec != RTNO_INFINITE) {
       return -TIMEOUT;
     }
   }
@@ -93,7 +93,7 @@ bool Transport::isNew(const uint32_t wait_usec) {
   return true;
 }
 
-RTnoPacket Transport::receive(const uint32_t wait_usec/*=INFINITE*/)
+RTnoPacket Transport::receive(const uint32_t wait_usec/*=RTNO_INFINITE*/)
 {
   uint8_t header[PACKET_HEADER_SIZE];
   if(read(header, PACKET_HEADER_SIZE, wait_usec) < 0) {

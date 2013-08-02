@@ -34,7 +34,7 @@ RTnoBase::~RTnoBase()
 
 bool RTnoBase::initialize()
 {
-  RTnoProfile profile = m_pProtocol->getRTnoProfile(INFINITE);
+  RTnoProfile profile = m_pProtocol->getRTnoProfile(RTNO_INFINITE);
 
   std::cout << "-Parsing RTnoProfile." << std::endl;
   PortList inPorts = profile.inPorts();
@@ -86,7 +86,7 @@ bool RTnoBase::execute()
 
 
   
-  m_pProtocol->handleReceivedPacket(INFINITE);
+  m_pProtocol->handleReceivedPacket(RTNO_INFINITE);
   
   return true;
 }
