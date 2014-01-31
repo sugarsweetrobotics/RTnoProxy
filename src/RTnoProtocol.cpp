@@ -8,6 +8,7 @@
 
 
 using namespace ssr;
+static std::string MSGHDR = "[RTnoProxy] ";
 
 RTnoProtocol::RTnoProtocol(RTnoRTObjectWrapper* pRTObject, Transport *pTransport) :
   m_pTransport(pTransport),m_pRTObjectWrapper(pRTObject)
@@ -31,12 +32,18 @@ RTnoPacket RTnoProtocol::waitCommand(const uint8_t command, const uint32_t wait_
 }
 
 const RTnoProfile&  RTnoProtocol::getRTnoProfile(const uint32_t wait_usec) {
-  std::cout << "-RTnoProtocol::getRTnoProfile() called." << std::endl;
+  std::cout << MSGHDR << " - RTnoProtocol::getRTnoProfile() called." << std::endl;
   static const RTnoPacket cmd_packet(GET_PROFILE);
+  std::cout << MSGHDR << "    - Transfer Profile Request to Arduino." << std::endl;
   m_pTransport->send(cmd_packet);
+
+  int timeout_count = wait_usec/1000;
   while(1) {
     if(!m_pTransport->isNew()) {
       coil::usleep(1000);
+      if (--timeout_count < 0) {
+	throw TimeOutException();
+      }
       continue;
     }
 
@@ -195,34 +202,45 @@ void RTnoProtocol::handleReceivedPacket(const uint32_t wait_usec) {
 uint8_t RTnoProtocol::initialize()
 {
   uint8_t status = getRTnoStatus();
-  std::cout << "RTno Status == " << (int)status << std::endl;
+  std::cout << MSGHDR << " - RTno Status=" << (int)status << std::endl;
   int ret;
   switch(status) {
   case STATE_ACTIVE:
+    std::cout << MSGHDR << " -- Now Arduino is in ACTIVE STATE. Deactivating..." << std::endl;
     if((ret = deactivate()) != 0) {
+      std::cout << MSGHDR << " -- Failed." << std::endl;
       return false;
     }
+    std::cout << MSGHDR << " -- OK." << std::endl;
     break;
   case STATE_INACTIVE:
+    std::cout << MSGHDR << " -- Now Arduino is in INACTIVE STATE" << std::endl;
     break;
   case STATE_ERROR:
+    std::cout << MSGHDR << " -- Now Arduino is in ERROR STATE. Resetting..." << std::endl;
     if((ret = reset()) != 0) {
+      std::cout << MSGHDR << " -- Failed." << std::endl;
       return false;
     }
+    std::cout << MSGHDR << " -- OK." << std::endl;
     break;
   }
   
   uint8_t contextType = getRTnoExecutionContextType();
-  std::cout << "Execution Context Type == " << (int)contextType << std::endl;
+  std::cout << MSGHDR <<  "Execution Context Type == " << (int)contextType << std::endl;
   switch(contextType) {
   case ProxySynchronousExecutionContext:
-    std::cout << "--ProxySynchronousExecutionContext detected!" << std::endl;
+    std::cout << MSGHDR << " - ProxySynchronousExecutionContext is detected." << std::endl;
+    std::cout << MSGHDR << " - This Arduino's on_execute is synchronously executed with this PC.\n" << std::endl;
+    std::cout << MSGHDR << " - You can change excution ratio by configuring RTnoProxy's one." << std::endl;
     m_ProxySynchronousExecution = true;
     break;
   default:
+    std::cout << " - ProxySynchronousExecutionContext is NOT detected." << std::endl;
+    std::cout << " - You can change exeecution ratio by implementing Arduino Code\n" << std::endl;
     m_ProxySynchronousExecution = false;
   }
   
-  std::cout << "onInitialized OK." << std::endl;
+
   return 0;
 }

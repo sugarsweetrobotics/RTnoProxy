@@ -65,7 +65,7 @@ RTnoProxy::~RTnoProxy()
 
 
 
-
+static std::string MSGHDR = "[RTnoProxy] ";
 
 RTC::ReturnCode_t RTnoProxy::onInitialize()
 {
@@ -74,10 +74,21 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	bindParameter("portNumber", m_portNumber, "23");
 	bindParameter("comport", m_comport, "/dev/tty0");
 	bindParameter("baudrate", m_baudrate, "19200");
+
+
 	updateParameters("default");
-	//std::cout << "conf.default.comport" << ":" << m_comport << std::endl;
-	//std::cout << "conf.default.baudrate" << ":" << m_baudrate << std::endl;
-	// Registration: InPort/OutPort/Service
+	std::cout << MSGHDR << "Configuration Values" << std::endl;
+	std::cout << MSGHDR << " - conf.default.connectionType" << ":" << m_connectionType << std::endl;
+	if (m_connectionType == "serial") {
+	  std::cout << MSGHDR << " - Serial Port Connection" << std::endl;
+	  std::cout << MSGHDR << "    - conf.default.comport" << ":" << m_comport << std::endl;
+	  std::cout << MSGHDR << "    - conf.default.baudrate" << ":" << m_baudrate << std::endl;
+	} else {
+	  std::cout << MSGHDR << " - TCP Port Connection" << std::endl;
+	  std::cout << MSGHDR << "    - conf.default.portNumber" << ":" << m_portNumber << std::endl;
+	  std::cout << MSGHDR << "    - conf.default.ipAddress" << ":" << m_ipAddress << std::endl;
+	}
+ 
 	// <rtc-template block="registration">
 	// Set InPort buffers
 
@@ -93,42 +104,45 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	// </rtc-template>
 
 	if(m_connectionType == "serial") {
-		try {
-			std::cout << "Opening SerialPort(" << m_comport << ")....." << std::ends;
-			m_pSerialDevice = new ssr::Serial(m_comport.c_str(), m_baudrate);
-		} catch (net::ysuga::ComOpenException & e) {
-			std::cout << "Fail(" << e.what() << ")" << std::endl;
-			return RTC::RTC_ERROR;
-		}
-	} else if(m_connectionType == "tcp") {
-		try {
-			std::cout << "Connecting to " << m_ipAddress << ":" << m_portNumber << " with TCP" << std::ends;
-			m_pSerialDevice = new ssr::EtherTcp(m_ipAddress.c_str(), m_portNumber);
+	  try {
+	    std::cout << MSGHDR << "Opening SerialPort(" << m_comport << ")....." << std::ends;
+	    m_pSerialDevice = new ssr::Serial(m_comport.c_str(), m_baudrate);
+	    std::cout << MSGHDR << "Opened." << std::endl;
 
-		} catch (...) {
-			std::cout << "Fail" << std::endl;
-			return RTC::RTC_ERROR;
-		}
+	  } catch (net::ysuga::ComOpenException & e) {
+	    std::cout << MSGHDR << "Failed (" << e.what() << ")" << std::endl;
+	    return RTC::RTC_ERROR;
+	  }
+	} else if(m_connectionType == "tcp") {
+	  try {
+	    std::cout << MSGHDR << "Connecting to " << m_ipAddress << ":" << m_portNumber << " with TCP" << std::ends;
+	    m_pSerialDevice = new ssr::EtherTcp(m_ipAddress.c_str(), m_portNumber);
+	    
+	  } catch (...) {
+	    std::cout << MSGHDR << "Failed" << std::endl;
+	    return RTC::RTC_ERROR;
+	  }
 
 	}
 	
 	m_pRTno = new ssr::RTnoBase(this, m_pSerialDevice);
-	
-	std::cout << "OK." << std::endl;
-
 
 	coil::TimeValue interval(0, 1000*1000);
-	std::cout << "Waiting for Startup the arduino...\n";
-	std::cout << "3......" << std::endl;  coil::sleep(interval);
-	std::cout << "2...."   << std::endl;  coil::sleep(interval);
-	std::cout << "1.."     << std::endl;  coil::sleep(interval);
-	std::cout << "Go!"     << std::endl;
+	std::cout << MSGHDR << "Waiting for Startup the arduino...\n";
+	std::cout << MSGHDR << " - 3......" << std::endl;  coil::sleep(interval);
+	std::cout << MSGHDR << " - 2...."   << std::endl;  coil::sleep(interval);
+	std::cout << MSGHDR << " - 1.."     << std::endl;  coil::sleep(interval);
+	std::cout << MSGHDR << " - Go!"     << std::endl;
 
-	std::cout << "Starting up onInitialize sequence." << std::endl;
+	std::cout << MSGHDR << "Starting up onInitialize sequence." << std::endl;
 	
 	if (!m_pRTno->initialize()) {
 	  return RTC::RTC_ERROR;
+	  std::cout << MSGHDR << " - Arduino did not reply RTnoProfile request.\n"
+		    << " - Please check your Arduino Board is properly connected to your machine.\n"
+		    << " - Or, your RTnoProxy is correctly configured (see above message.)" << std::endl;
 	}
+	std::cout << MSGHDR << "RTnoProxy is successfully initialized." << std::endl;
 
 	return RTC::RTC_OK;
 }

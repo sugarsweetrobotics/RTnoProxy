@@ -30,25 +30,36 @@ RTnoBase::~RTnoBase()
   delete m_pTransport;
 }
 
-
+static std::string MSGHDR = "[RTnoProxy] ";
 
 bool RTnoBase::initialize()
 {
-  RTnoProfile profile = m_pProtocol->getRTnoProfile(RTNO_INFINITE);
+  try {
+    RTnoProfile profile = m_pProtocol->getRTnoProfile(10*1000*1000);
 
-  std::cout << "-Parsing RTnoProfile." << std::endl;
+  std::cout << MSGHDR << " - Parsing RTnoProfile." << std::endl;
   PortList inPorts = profile.inPorts();
   for(PortListIterator it = inPorts.begin();it != inPorts.end();++it) {
+    std::cout << MSGHDR << " -- Adding InPort  (name=" << (*it).getPortName()
+	      << ", typeCode=" << (*it).getTypeCode() << ")\n";
     m_pRTObjectWrapper->addInPort((*it));
   }
   PortList outPorts = profile.outPorts();
   for(PortListIterator it = outPorts.begin();it != outPorts.end();++it) {
+    std::cout << MSGHDR << " -- Adding OutPort (name=" << (*it).getPortName()
+	      << ", typeCode=" << (*it).getTypeCode() << ")\n";
+
     m_pRTObjectWrapper->addOutPort((*it));
   }
-  std::cout << "-Success." << std::endl;
-
+  std::cout << MSGHDR << " - Success." << std::endl;
   m_pProtocol->initialize();
+  std::cout << MSGHDR << " - onInitialized OK." << std::endl;
   return true;
+  } catch (TimeOutException &e) {
+    std::cout << MSGHDR << " - TimeOutException" << std::endl;
+    return false;
+  }
+
 }
 
 

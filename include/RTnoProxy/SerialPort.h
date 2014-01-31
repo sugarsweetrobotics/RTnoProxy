@@ -31,7 +31,7 @@ namespace net {
 			ComException(const char* msg) {this->msg = msg;}
 			virtual ~ComException() throw() {}
 		public:
-			const char* what() throw() {return msg.c_str();}
+			const char* what() const throw() {return msg.c_str();}
 		};
 
 		/**

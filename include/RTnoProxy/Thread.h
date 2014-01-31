@@ -29,7 +29,7 @@ namespace net {
 		class LIBYSUGA_API Mutex {
 		private:
 #ifdef WIN32
-			HANDLE m_Handle;
+		         HANDLE m_Handle;
 #else
 			
 #endif
@@ -54,7 +54,7 @@ namespace net {
 			HANDLE m_Handle;
 			DWORD m_ThreadId;
 #else
-			pthread_t m_Handle;
+			// pthread_t m_Handle;
 			
 #endif
 		public:
