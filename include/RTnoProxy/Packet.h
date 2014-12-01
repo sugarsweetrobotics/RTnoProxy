@@ -32,6 +32,8 @@
 #define RTNO_ERROR 'x'
 
 #define PACKET_ERROR 'F'
+#define PACKET_ERROR_CHECKSUM 'H'
+#define PACKET_ERROR_TIMEOUT 'K'
 
 #define OUTPORT_WRITE 'W'
 

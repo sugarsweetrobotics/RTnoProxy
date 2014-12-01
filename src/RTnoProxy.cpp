@@ -13,6 +13,7 @@
 #include "Serial.h"
 
 
+#include "RTnoProtocol.h"
 
 
 // Module specification
@@ -34,7 +35,8 @@ static const char* rtno_spec[] =
     "language",          "C++",
     "lang_type",         "compile",
 #ifdef WIN32
-	//"conf.default.comport", "\\\\.\\COM9",
+	"conf.default.comport", "\\\\.\\COM10",
+	"conf.default.baudrate", "57600", 
 #else
     //"conf.default.comport", "/dev/tty2",
 #endif
@@ -135,12 +137,17 @@ RTC::ReturnCode_t RTnoProxy::onInitialize()
 	std::cout << MSGHDR << " - Go!"     << std::endl;
 
 	std::cout << MSGHDR << "Starting up onInitialize sequence." << std::endl;
-	
+
+	try {
 	if (!m_pRTno->initialize()) {
-	  return RTC::RTC_ERROR;
 	  std::cout << MSGHDR << " - Arduino did not reply RTnoProfile request.\n"
 		    << " - Please check your Arduino Board is properly connected to your machine.\n"
 		    << " - Or, your RTnoProxy is correctly configured (see above message.)" << std::endl;
+	  return RTC::RTC_ERROR;
+	}
+	} catch (ssr::GetProfileException& ex) {
+		std::cout << MSGHDR << " - Arduino send ERROR_PACKET when getting RTnoProfile in onInitialize" << std::endl;
+		return RTC::RTC_OK;
 	}
 	std::cout << MSGHDR << "RTnoProxy is successfully initialized." << std::endl;
 

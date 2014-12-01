@@ -62,8 +62,11 @@ const RTnoProfile&  RTnoProtocol::getRTnoProfile(const uint32_t wait_usec) {
       break;
 
     case PACKET_ERROR:
-      std::cout << "--RTnoProtocol::getRTnoProfile(): Packet Failed" << std::endl;
       throw GetProfileException();
+	case PACKET_ERROR_CHECKSUM:
+	  throw ChecksumException();
+	case PACKET_ERROR_TIMEOUT:
+	  throw TimeoutException();
     default: 
       std::cout << "Unknown Command (" << pac.getInterface() << ")" << std::endl;
     }

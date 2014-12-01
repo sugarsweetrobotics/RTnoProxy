@@ -19,6 +19,28 @@ namespace ssr {
     virtual const char* what() const throw() {return msg.c_str();}
   };
 
+  class ChecksumException : public std::exception {
+  private:
+    std::string msg;
+  public:
+  ChecksumException(std::string str = "") : msg("ChecksumException:" + str) {}
+    virtual ~ChecksumException() throw() {}
+
+    virtual const char* what() const throw() {return msg.c_str();}
+  };
+
+  class TimeoutException : public std::exception {
+  private:
+    std::string msg;
+  public:
+  TimeoutException(std::string str = "") : msg("TimeoutException:" + str) {}
+    virtual ~TimeoutException() throw() {}
+
+    virtual const char* what() const throw() {return msg.c_str();}
+  };
+
+
+
   class ExecuteFailedException : public std::exception {
   private:
     std::string msg;
