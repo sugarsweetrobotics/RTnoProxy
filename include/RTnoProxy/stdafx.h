@@ -3,11 +3,11 @@
 #include <rtm/idl/BasicDataTypeSkel.h>
 #include <rtm/idl/ExtendedDataTypesSkel.h>
 #include <rtm/idl/InterfaceDataTypesSkel.h>
-
+#include "rtm/idl/BasicDataType.hh"
 
 #include "rtm/Typename.h"
 #include "rtm/OutPort.h"
-#include "rtm/idl/BasicDataType.hh"
+
 
 #include <rtm/Manager.h>
 #include <rtm/DataFlowComponentBase.h>

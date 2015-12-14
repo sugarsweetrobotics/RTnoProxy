@@ -3,9 +3,8 @@
 #include "RTnoRTObjectWrapper.h"
 #include "Packet.h"
 #include "RTnoProtocol.h"
-
+#include "RTnoProfile.h"
 #include <iostream>
-
 
 using namespace ssr;
 static std::string MSGHDR = "[RTnoProxy] ";
