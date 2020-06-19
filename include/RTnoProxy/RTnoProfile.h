@@ -30,7 +30,7 @@ namespace ssr {
       return m_PortName;
     }
 
-    const bool operator==(const PortProfile& p) {
+    const bool operator==(const PortProfile& p) const {
       return (getPortName() == p.getPortName());
     }
   };
